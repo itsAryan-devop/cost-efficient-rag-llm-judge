@@ -8,11 +8,10 @@ from google.genai.errors import ClientError, ServerError
 
 from .config import settings
 from .logger import log_event
+from .retry import ROTATABLE_STATUS_CODES, RETRYABLE_STATUS_CODES, status_code as _shared_status_code
 
 
 T = TypeVar("T")
-ROTATABLE_STATUS_CODES = {401, 403, 429, 500, 502, 503, 504}
-RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
 def get_gemini_api_keys() -> list[str]:
@@ -41,13 +40,7 @@ def get_gemini_api_keys() -> list[str]:
 
 def _status_code(exc: Exception) -> int:
     """Extracts a provider status code across google-genai SDK versions."""
-    for attr in ("status_code", "status", "code"):
-        value = getattr(exc, attr, None)
-        if isinstance(value, int):
-            return value
-
-    match = re.search(r"\b(4\d\d|5\d\d)\b", str(exc))
-    return int(match.group(1)) if match else 0
+    return _shared_status_code(exc)
 
 
 def call_with_gemini_key(purpose: str, operation: Callable[[genai.Client], T]) -> T:

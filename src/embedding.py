@@ -58,16 +58,19 @@ def _gemini_embedding(text: str, input_type: str) -> List[float]:
     embedding = response.embeddings[0].values
     return [float(v) for v in embedding]
 
-def get_embedding(text: str, input_type: str = "document") -> List[float]:
+def get_embedding(text: str, input_type: str = "document", use_cache: bool = True) -> List[float]:
     """
     Gets the embedding for a piece of text.
     Checks the local disk cache first to save API calls.
+
+    Set ``use_cache=False`` to bypass the cache read so latency can be measured
+    cold (the result is still written to the cache for later warm calls).
     """
     provider = settings.embedding_provider.lower()
     model = "mock" if provider == "mock" else settings.embedding_model
     key = _cache_key(provider, model, text, input_type)
-    
-    if key in cache:
+
+    if use_cache and key in cache:
         return cache[key]
     
     if provider == "mock":
