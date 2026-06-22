@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = 200
     top_k: int = 5
     min_relevance_score: float | None = 0.90
+    data_root: str = "data"
     db_path: str = "db/lancedb"
     cache_path: str = "cache/diskcache"
     reports_path: str = "reports"

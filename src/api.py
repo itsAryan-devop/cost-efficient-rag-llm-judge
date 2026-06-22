@@ -1,6 +1,7 @@
 import time
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from pathlib import Path
 from typing import Optional
 from .config import settings
 from .ingestion import process_documents
@@ -17,7 +18,21 @@ class QueryRequest(BaseModel):
     metadata_filter: Optional[dict[str, str]] = None
 
 class IngestRequest(BaseModel):
-    data_dir: str = "data"
+    data_dir: str = settings.data_root
+
+def resolve_ingest_dir(data_dir: str) -> str:
+    """Restrict API-triggered ingestion to DATA_ROOT to avoid accidental broad scans."""
+    root = Path(settings.data_root).resolve()
+    requested = Path(data_dir).resolve()
+
+    if requested != root and root not in requested.parents:
+        raise ValueError(f"data_dir must be inside configured DATA_ROOT: {settings.data_root}")
+    if not requested.exists():
+        raise ValueError(f"data_dir does not exist: {data_dir}")
+    if not requested.is_dir():
+        raise ValueError(f"data_dir must be a directory: {data_dir}")
+
+    return str(requested)
 
 @app.get("/health")
 def health_check():
@@ -27,7 +42,8 @@ def health_check():
 def ingest_documents(req: IngestRequest):
     """Idempotent document ingestion."""
     try:
-        chunks = process_documents(req.data_dir)
+        data_dir = resolve_ingest_dir(req.data_dir)
+        chunks = process_documents(data_dir)
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
