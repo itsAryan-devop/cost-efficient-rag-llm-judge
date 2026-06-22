@@ -42,11 +42,9 @@ def test_query_returns_bad_request_for_unsupported_filter(monkeypatch):
     assert "Unsupported metadata filter" in response.json()["detail"]
 
 
-def test_query_response_model_excludes_vectors(monkeypatch):
+def test_query_response_model_excludes_vectors(mock_corpus_db):
     client = TestClient(app)
 
-    monkeypatch.setattr(settings, "embedding_provider", "mock")
-    monkeypatch.setattr(settings, "generation_provider", "mock")
     response = client.post("/query", json={"query": "What is the default chunk overlap?", "top_k": 1})
 
     assert response.status_code == 200
@@ -54,6 +52,19 @@ def test_query_response_model_excludes_vectors(monkeypatch):
     assert body["sources"]
     assert "vector" not in body["sources"][0]
     assert "_distance" in body["sources"][0]
+
+
+def test_query_returns_grounded_sources_after_ingest(mock_corpus_db):
+    """End-to-end hermetic check: ingest a temp corpus, then query it."""
+    client = TestClient(app)
+
+    response = client.post("/query", json={"query": "nearest neighbor search vector store", "top_k": 3})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["sources"]
+    assert all("vector" not in source for source in body["sources"])
+    assert body["provider"] == "mock"
 
 
 def test_resolve_ingest_dir_rejects_paths_outside_data_root(tmp_path, monkeypatch):
