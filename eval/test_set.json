@@ -1,0 +1,77 @@
+[
+  {
+    "query": "What is the objective of Problem 1?",
+    "relevant_chunk_ids": ["63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7"],
+    "reference_answer": "Problem 1 asks for a QA service over a document corpus backed by a low-cost vector store, with evaluation of retrieval quality, answer quality, latency, and cost."
+  },
+  {
+    "query": "Which file types must the RAG ingestion pipeline support?",
+    "relevant_chunk_ids": ["fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0", "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"],
+    "reference_answer": "The pipeline must support PDF, HTML, and Markdown ingestion."
+  },
+  {
+    "query": "What must be configurable about chunking?",
+    "relevant_chunk_ids": ["fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0", "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298", "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"],
+    "reference_answer": "Chunk size and chunk overlap must be configurable, with defaults of 1000 characters and 200 characters in this implementation."
+  },
+  {
+    "query": "How does the implementation prevent duplicate vectors during re-ingestion?",
+    "relevant_chunk_ids": ["4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"],
+    "reference_answer": "It uses deterministic SHA-256 document and chunk IDs, deletes existing rows with the same chunk IDs, and then inserts the updated rows."
+  },
+  {
+    "query": "Which metadata fields are stored with each chunk?",
+    "relevant_chunk_ids": ["4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"],
+    "reference_answer": "The implementation stores vector, chunk text, document ID, source file, document type, chunk index, chunk size, and chunk overlap."
+  },
+  {
+    "query": "What endpoints does the FastAPI service expose?",
+    "relevant_chunk_ids": ["4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298", "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"],
+    "reference_answer": "The service exposes /health, /ingest, and /query."
+  },
+  {
+    "query": "What should the system do when no relevant context is retrieved?",
+    "relevant_chunk_ids": ["fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0", "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a"],
+    "reference_answer": "It should return a no-context response and avoid hallucinating."
+  },
+  {
+    "query": "Which retrieval metrics are required by the assignment?",
+    "relevant_chunk_ids": ["fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"],
+    "reference_answer": "The required retrieval metrics are Recall@k or Hit Rate, MRR, nDCG@k, and context precision."
+  },
+  {
+    "query": "Which answer quality metrics are required?",
+    "relevant_chunk_ids": ["fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0", "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"],
+    "reference_answer": "The answer quality metrics are faithfulness or groundedness and answer relevance."
+  },
+  {
+    "query": "What deliverables are required for Problem 1?",
+    "relevant_chunk_ids": ["aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"],
+    "reference_answer": "The deliverables are a runnable RAG service, evaluation harness and results file, cost-comparison table, and README discussion."
+  },
+  {
+    "query": "How many points are assigned to cost analysis?",
+    "relevant_chunk_ids": ["aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"],
+    "reference_answer": "Cost analysis is worth 20 points."
+  },
+  {
+    "query": "Why was LanceDB selected as the low-cost vector store?",
+    "relevant_chunk_ids": ["58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea", "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"],
+    "reference_answer": "LanceDB was selected because it runs embedded with the application and avoids an always-on managed vector database bill."
+  },
+  {
+    "query": "What vector scales are compared in the cost model?",
+    "relevant_chunk_ids": ["58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea"],
+    "reference_answer": "The cost model compares 100K, 1M, and 10M stored vectors."
+  },
+  {
+    "query": "What assumptions are used for vector size and metadata overhead?",
+    "relevant_chunk_ids": ["58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea"],
+    "reference_answer": "The assumptions are 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector."
+  },
+  {
+    "query": "What telemetry is logged for each query?",
+    "relevant_chunk_ids": ["22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a", "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"],
+    "reference_answer": "Each query logs latency, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped."
+  }
+]

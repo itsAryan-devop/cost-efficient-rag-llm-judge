@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Cost Analysis Notes</title>
+  </head>
+  <body>
+    <main>
+      <h1>Cost Analysis Notes</h1>
+      <p>LanceDB was selected as the low-cost vector store because it runs embedded with the application and avoids an always-on managed vector database bill.</p>
+      <p>The cost model compares 100K, 1M, and 10M stored vectors. The assumptions include 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector.</p>
+      <p>Local storage is estimated at 0.08 dollars per GB per month. The managed vector database baseline is estimated at 70 dollars per month, increasing at larger scale.</p>
+      <p>Embedding is treated as a one-time indexing cost. The model assumes 180 input tokens per chunk and 0.15 dollars per one million embedding input tokens.</p>
+      <p>The accepted trade-off is that managed vector databases are better for high-concurrency, multi-region, high-availability production systems. The embedded store is better for a low-cost, lightly queried workload.</p>
+    </main>
+  </body>
+</html>

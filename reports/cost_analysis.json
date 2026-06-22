@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-06-22T17:21:48.770596Z",
+  "assumptions": {
+    "vector_dimension": 768,
+    "bytes_per_float": 4,
+    "metadata_overhead_bytes_per_vector": 700,
+    "storage_cost_per_gb_month": 0.08,
+    "existing_app_server_cost_month": 10.0,
+    "managed_base_cost_month": 70.0,
+    "managed_cost_per_extra_million_vectors": 10.0,
+    "embedding_cost_per_million_input_tokens": 0.15,
+    "avg_tokens_per_chunk": 180
+  },
+  "rows": [
+    {
+      "vectors": 100000,
+      "estimated_index_gb": 0.351,
+      "lancedb_storage_cost_month": 0.03,
+      "managed_vector_db_cost_month": 70.0,
+      "one_time_embedding_cost": 2.7
+    },
+    {
+      "vectors": 1000000,
+      "estimated_index_gb": 3.513,
+      "lancedb_storage_cost_month": 0.28,
+      "managed_vector_db_cost_month": 70.0,
+      "one_time_embedding_cost": 27.0
+    },
+    {
+      "vectors": 10000000,
+      "estimated_index_gb": 35.129,
+      "lancedb_storage_cost_month": 2.81,
+      "managed_vector_db_cost_month": 160.0,
+      "one_time_embedding_cost": 270.0
+    }
+  ],
+  "markdown_table": "| Vectors | Est. Index Size (GB) | LanceDB Storage ($/mo) | Managed DB Est. ($/mo) | One-time Embedding Cost ($) |\n|---:|---:|---:|---:|---:|\n| 100,000 | 0.351 | 0.03 | 70.0 | 2.7 |\n| 1,000,000 | 3.513 | 0.28 | 70.0 | 27.0 |\n| 10,000,000 | 35.129 | 2.81 | 160.0 | 270.0 |"
+}

@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pydantic-settings
+lancedb
+google-genai
+groq
+diskcache
+pdfplumber
+beautifulsoup4
+markdown
+langchain-text-splitters
+python-multipart
+pytest

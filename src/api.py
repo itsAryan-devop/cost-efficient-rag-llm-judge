@@ -1,0 +1,91 @@
+import time
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Optional
+from .config import settings
+from .ingestion import process_documents
+from .embedding import get_embedding
+from .storage import upsert_vectors, search
+from .generation import generate_answer
+from .logger import log_query
+
+app = FastAPI(title="Cost-Efficient RAG Application")
+
+class QueryRequest(BaseModel):
+    query: str
+    top_k: int = settings.top_k
+    metadata_filter: Optional[dict[str, str]] = None
+
+class IngestRequest(BaseModel):
+    data_dir: str = "data"
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+@app.post("/ingest")
+def ingest_documents(req: IngestRequest):
+    """Idempotent document ingestion."""
+    chunks = process_documents(req.data_dir)
+    if not chunks:
+        return {"status": "success", "message": "No documents found or processed.", "chunks_processed": 0}
+        
+    # Embed chunks
+    for chunk in chunks:
+        chunk["vector"] = get_embedding(chunk["text"], input_type="document")
+        
+    # Store
+    upsert_vectors(chunks)
+    
+    return {"status": "success", "chunks_processed": len(chunks)}
+
+@app.post("/query")
+def query_rag(req: QueryRequest):
+    start_time = time.time()
+    
+    # 1. Embed query
+    embedding_start = time.time()
+    query_vector = get_embedding(req.query, input_type="query")
+    embedding_latency_ms = (time.time() - embedding_start) * 1000
+    
+    # 2. Retrieve
+    retrieval_start = time.time()
+    results = search(query_vector, top_k=req.top_k, metadata_filter=req.metadata_filter)
+    retrieval_latency_ms = (time.time() - retrieval_start) * 1000
+    
+    # 3. Generate
+    generation_start = time.time()
+    generation = generate_answer(req.query, results)
+    generation_latency_ms = (time.time() - generation_start) * 1000
+    
+    latency = (time.time() - start_time) * 1000
+    
+    # Clean up results for response (remove large vector)
+    for r in results:
+        if "vector" in r:
+            del r["vector"]
+        
+    log_query(
+        req.query,
+        latency,
+        len(results),
+        generation.token_usage,
+        provider=generation.provider,
+        model=generation.model,
+        skipped_llm=generation.skipped_llm,
+        embedding_latency_ms=round(embedding_latency_ms, 2),
+        retrieval_latency_ms=round(retrieval_latency_ms, 2),
+        generation_latency_ms=round(generation_latency_ms, 2),
+    )
+    
+    return {
+        "answer": generation.answer,
+        "sources": results,
+        "latency_ms": latency,
+        "embedding_latency_ms": embedding_latency_ms,
+        "retrieval_latency_ms": retrieval_latency_ms,
+        "generation_latency_ms": generation_latency_ms,
+        "token_usage": generation.token_usage,
+        "provider": generation.provider,
+        "model": generation.model,
+    }

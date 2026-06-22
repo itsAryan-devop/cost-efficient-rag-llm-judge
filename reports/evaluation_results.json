@@ -1,0 +1,442 @@
+{
+  "created_at": "2026-06-22T17:38:59.999933Z",
+  "summary": {
+    "case_count": 15,
+    "mean_recall@5": 0.9666666666666667,
+    "mean_hit_rate": 1.0,
+    "mean_mrr": 0.9133333333333333,
+    "mean_context_precision": 0.29333333333333333,
+    "mean_ndcg@5": 0.9163561854452535,
+    "mean_faithfulness": 1.0,
+    "mean_relevance": 1.0,
+    "total_token_usage": 21088,
+    "p50_latency_ms": 16.0524845123291,
+    "p95_latency_ms": 30.47776222229004,
+    "p50_retrieval_latency_ms": 16.0524845123291,
+    "p95_retrieval_latency_ms": 29.46758270263672,
+    "settings": {
+      "chunk_size": 1000,
+      "chunk_overlap": 200,
+      "top_k": 5,
+      "min_relevance_score": 0.9,
+      "embedding_provider": "gemini",
+      "generation_provider": "groq",
+      "judge_provider": "groq"
+    }
+  },
+  "results": [
+    {
+      "query": "What is the objective of Problem 1?",
+      "reference_answer": "Problem 1 asks for a QA service over a document corpus backed by a low-cost vector store, with evaluation of retrieval quality, answer quality, latency, and cost.",
+      "retrieved_ids": [
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
+        "5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7"
+      ],
+      "answer": "The objective of Problem 1 is to build a QA service over a document corpus, backed by a low-cost vector store, with honest evaluation of retrieval quality, answer quality, latency, and cost [63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 30.47776222229004,
+      "embedding_latency_ms": 1.0101795196533203,
+      "retrieval_latency_ms": 29.46758270263672,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1613
+    },
+    {
+      "query": "Which file types must the RAG ingestion pipeline support?",
+      "reference_answer": "The pipeline must support PDF, HTML, and Markdown ingestion.",
+      "retrieved_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"
+      ],
+      "relevant_chunk_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"
+      ],
+      "answer": "The RAG ingestion pipeline must support PDF, HTML, Markdown, and plain text files [4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.4,
+      "ndcg@5": 0.8772153153380493,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 17.229080200195312,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 17.229080200195312,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1405
+    },
+    {
+      "query": "What must be configurable about chunking?",
+      "reference_answer": "Chunk size and chunk overlap must be configurable, with defaults of 1000 characters and 200 characters in this implementation.",
+      "retrieved_ids": [
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a"
+      ],
+      "relevant_chunk_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"
+      ],
+      "answer": "The default chunk size and the default overlap must be configurable about chunking [4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.6,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 15.779256820678711,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 15.779256820678711,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1241
+    },
+    {
+      "query": "How does the implementation prevent duplicate vectors during re-ingestion?",
+      "reference_answer": "It uses deterministic SHA-256 document and chunk IDs, deletes existing rows with the same chunk IDs, and then inserts the updated rows.",
+      "retrieved_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"
+      ],
+      "answer": "The implementation prevents duplicate vectors during re-ingestion by deleting existing rows with the same chunk IDs before inserting updated rows, which is handled through idempotent re-ingestion [4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 14.902830123901367,
+      "embedding_latency_ms": 1.0881423950195312,
+      "retrieval_latency_ms": 12.815713882446289,
+      "generation_latency_ms": 0.9989738464355469,
+      "token_usage": 1388
+    },
+    {
+      "query": "Which metadata fields are stored with each chunk?",
+      "reference_answer": "The implementation stores vector, chunk text, document ID, source file, document type, chunk index, chunk size, and chunk overlap.",
+      "retrieved_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea"
+      ],
+      "relevant_chunk_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298"
+      ],
+      "answer": "The metadata fields stored with each chunk include document ID, source file, document type, chunk index, chunk size, and chunk overlap [4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 14.756202697753906,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 14.756202697753906,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1220
+    },
+    {
+      "query": "What endpoints does the FastAPI service expose?",
+      "reference_answer": "The service exposes /health, /ingest, and /query.",
+      "retrieved_ids": [
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7"
+      ],
+      "relevant_chunk_ids": [
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"
+      ],
+      "answer": "The FastAPI service exposes the following endpoints: `/health`, `/ingest`, and `/query` [4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298]. Additionally, it is mentioned that the service exposes an ingestion endpoint and a query endpoint [cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.4,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 16.449451446533203,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 16.449451446533203,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1461
+    },
+    {
+      "query": "What should the system do when no relevant context is retrieved?",
+      "reference_answer": "It should return a no-context response and avoid hallucinating.",
+      "retrieved_ids": [
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"
+      ],
+      "relevant_chunk_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a"
+      ],
+      "answer": "The system should return a no-context response instead of hallucinating when no relevant chunks are retrieved [22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.4,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 17.774343490600586,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 17.774343490600586,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1308
+    },
+    {
+      "query": "Which retrieval metrics are required by the assignment?",
+      "reference_answer": "The required retrieval metrics are Recall@k or Hit Rate, MRR, nDCG@k, and context precision.",
+      "retrieved_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
+        "a391cc950475bfbdf1340a43a7acdb06009e8d44bf2a15135cfad43cf458e486"
+      ],
+      "relevant_chunk_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "answer": "The assignment requires the following retrieval metrics: Recall@k, Hit Rate, MRR, nDCG@k, and context precision [fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 16.0524845123291,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 16.0524845123291,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1435
+    },
+    {
+      "query": "Which answer quality metrics are required?",
+      "reference_answer": "The answer quality metrics are faithfulness or groundedness and answer relevance.",
+      "retrieved_ids": [
+        "5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419",
+        "a391cc950475bfbdf1340a43a7acdb06009e8d44bf2a15135cfad43cf458e486",
+        "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
+        "8845c16897b2737516385a1d80176c1cb9772dfbfecad05c0521902a257350e1",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"
+      ],
+      "answer": "The required answer quality metrics include faithfulness/groundedness, answer relevance, EM/F1 (if the dataset has gold answers) [fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0]. Additionally, the judging pipeline should produce a structured quality verdict, with concrete measures including per-criterion score, rationale, and overall score [5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419]. The rubric should include explicit criteria such as correctness, faithfulness, completeness, instruction-following, tone, and safety [5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419].",
+      "recall@5": 0.5,
+      "hit_rate": 1,
+      "mrr": 0.2,
+      "context_precision": 0.2,
+      "ndcg@5": 0.23719771276929622,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 13.928413391113281,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 13.928413391113281,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1516
+    },
+    {
+      "query": "What deliverables are required for Problem 1?",
+      "reference_answer": "The deliverables are a runnable RAG service, evaluation harness and results file, cost-comparison table, and README discussion.",
+      "retrieved_ids": [
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
+        "5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419"
+      ],
+      "relevant_chunk_ids": [
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"
+      ],
+      "answer": "For Problem 1, the required deliverables are: \n- a runnable RAG service \n- an evaluation harness + results file (all three layers) \n- a cost-comparison table \n- a README with a short discussion [aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee], [fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 11.636018753051758,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 11.636018753051758,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1652
+    },
+    {
+      "query": "How many points are assigned to cost analysis?",
+      "reference_answer": "Cost analysis is worth 20 points.",
+      "retrieved_ids": [
+        "a391cc950475bfbdf1340a43a7acdb06009e8d44bf2a15135cfad43cf458e486",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419"
+      ],
+      "relevant_chunk_ids": [
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee"
+      ],
+      "answer": "20 points are assigned to cost analysis [aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 0.5,
+      "context_precision": 0.2,
+      "ndcg@5": 0.6309297535714575,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 33.379554748535156,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 33.379554748535156,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1339
+    },
+    {
+      "query": "Why was LanceDB selected as the low-cost vector store?",
+      "reference_answer": "LanceDB was selected because it runs embedded with the application and avoids an always-on managed vector database bill.",
+      "retrieved_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"
+      ],
+      "answer": "LanceDB was selected as the low-cost vector store because it runs embedded with the application and avoids an always-on managed vector database bill [58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.4,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 15.94686508178711,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 15.94686508178711,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1386
+    },
+    {
+      "query": "What vector scales are compared in the cost model?",
+      "reference_answer": "The cost model compares 100K, 1M, and 10M stored vectors.",
+      "retrieved_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
+        "a391cc950475bfbdf1340a43a7acdb06009e8d44bf2a15135cfad43cf458e486",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea"
+      ],
+      "answer": "The cost model compares 100K, 1M, and 10M stored vectors [58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 16.06464385986328,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 16.06464385986328,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1387
+    },
+    {
+      "query": "What assumptions are used for vector size and metadata overhead?",
+      "reference_answer": "The assumptions are 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector.",
+      "retrieved_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0"
+      ],
+      "relevant_chunk_ids": [
+        "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea"
+      ],
+      "answer": "The assumptions used for vector size and metadata overhead are 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector [58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.2,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 16.934871673583984,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 16.934871673583984,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1390
+    },
+    {
+      "query": "What telemetry is logged for each query?",
+      "reference_answer": "Each query logs latency, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped.",
+      "retrieved_ids": [
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
+        "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
+        "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
+        "8845c16897b2737516385a1d80176c1cb9772dfbfecad05c0521902a257350e1"
+      ],
+      "relevant_chunk_ids": [
+        "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a",
+        "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801"
+      ],
+      "answer": "Per-query telemetry is emitted as structured JSON, which includes latency in milliseconds, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped [22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a]. Additionally, each query should log latency, retrieved chunk count, and token usage [cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801], [fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0].",
+      "recall@5": 1.0,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "context_precision": 0.4,
+      "ndcg@5": 1.0,
+      "faithfulness": 1,
+      "relevance": 1,
+      "latency_ms": 12.979507446289062,
+      "embedding_latency_ms": 0.0,
+      "retrieval_latency_ms": 12.979507446289062,
+      "generation_latency_ms": 0.0,
+      "token_usage": 1347
+    }
+  ]
+}
