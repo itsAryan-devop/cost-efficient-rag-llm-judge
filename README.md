@@ -98,7 +98,7 @@ Useful endpoints:
 - `POST /query` with `{"query": "...", "top_k": 5}`
 - Metadata filter example: `{"query": "...", "metadata_filter": {"doc_type": "pdf"}}`
 
-No-context handling is controlled by `MIN_RELEVANCE_SCORE`. LanceDB distance is lower-is-better, and the default `0.90` skips the LLM when the nearest chunk is too far away. This prevents unsupported answers and saves tokens.
+No-context handling is controlled by `MAX_RETRIEVAL_DISTANCE`. LanceDB distance is lower-is-better, and the default `0.90` skips the LLM when the nearest chunk is too far away. This prevents unsupported answers and saves tokens.
 
 The API validates empty queries, invalid `top_k` values, and unsupported metadata filters so bad requests return clear client errors.
 
@@ -268,5 +268,5 @@ The accepted trade-off is operational ownership. LanceDB reduces infrastructure 
 Current test status:
 
 ```text
-21 passed
+22 passed
 ```

@@ -7,6 +7,8 @@ def test_ir_metrics_with_relevant_chunk_at_rank_two():
 
     assert recall_at_k(retrieved, relevant, k=3) == 1.0
     assert hit_rate(retrieved, relevant) == 1
+    assert hit_rate(retrieved, relevant, k=1) == 0
+    assert hit_rate(retrieved, relevant, k=2) == 1
     assert mrr(retrieved, relevant) == 0.5
     assert context_precision(retrieved, relevant) == 1 / 3
     assert 0 < ndcg_at_k(retrieved, relevant, k=3) < 1

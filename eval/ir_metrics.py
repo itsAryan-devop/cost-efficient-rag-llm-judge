@@ -8,9 +8,10 @@ def recall_at_k(retrieved_ids: List[str], relevant_ids: List[str], k: int | None
     relevant_retrieved = sum(1 for r_id in relevant_ids if r_id in candidates)
     return relevant_retrieved / len(relevant_ids)
 
-def hit_rate(retrieved_ids: List[str], relevant_ids: List[str]) -> int:
+def hit_rate(retrieved_ids: List[str], relevant_ids: List[str], k: int | None = None) -> int:
     """Returns 1 if at least one relevant ID is in the retrieved IDs, else 0."""
-    return int(any(r_id in retrieved_ids for r_id in relevant_ids))
+    candidates = retrieved_ids[:k] if k is not None else retrieved_ids
+    return int(any(r_id in candidates for r_id in relevant_ids))
 
 def mrr(retrieved_ids: List[str], relevant_ids: List[str]) -> float:
     """Mean Reciprocal Rank."""

@@ -38,7 +38,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
         
         # 2. Compute IR Metrics
         recall = recall_at_k(retrieved_ids, relevant_ids, k=5)
-        hr = hit_rate(retrieved_ids, relevant_ids)
+        hr = hit_rate(retrieved_ids, relevant_ids, k=5)
         r_mrr = mrr(retrieved_ids, relevant_ids)
         cp = context_precision(retrieved_ids, relevant_ids)
         ndcg = ndcg_at_k(retrieved_ids, relevant_ids, k=5)
@@ -86,7 +86,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
             "chunk_size": settings.chunk_size,
             "chunk_overlap": settings.chunk_overlap,
             "top_k": settings.top_k,
-            "min_relevance_score": settings.min_relevance_score,
+            "max_retrieval_distance": settings.max_retrieval_distance,
             "embedding_provider": settings.embedding_provider,
             "embedding_model": settings.embedding_model,
             "embedding_dimension": settings.embedding_dimension,

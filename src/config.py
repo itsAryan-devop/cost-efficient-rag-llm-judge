@@ -17,15 +17,15 @@ class Settings(BaseSettings):
     chunk_size: int = 1000
     chunk_overlap: int = 200
     top_k: int = 5
-    min_relevance_score: float | None = 0.90
+    max_retrieval_distance: float | None = 0.90
     data_root: str = "data"
     db_path: str = "db/lancedb"
     cache_path: str = "cache/diskcache"
     reports_path: str = "reports"
 
-    @field_validator("min_relevance_score", mode="before")
+    @field_validator("max_retrieval_distance", mode="before")
     @classmethod
-    def empty_string_to_none(cls, value):
+    def empty_distance_to_none(cls, value):
         if value == "":
             return None
         return value

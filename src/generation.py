@@ -64,14 +64,14 @@ def _groq_generate(prompt: str) -> GenerationResult:
 def has_relevant_context(retrieved_chunks: list[dict]) -> bool:
     if not retrieved_chunks:
         return False
-    if settings.min_relevance_score is None:
+    if settings.max_retrieval_distance is None:
         return True
 
     # LanceDB returns "_distance"; lower distance means more similar.
     distance = retrieved_chunks[0].get("_distance")
     if distance is None:
         return True
-    return float(distance) <= settings.min_relevance_score
+    return float(distance) <= settings.max_retrieval_distance
 
 def build_prompt(query: str, retrieved_chunks: list[dict]) -> str:
     context_text = ""

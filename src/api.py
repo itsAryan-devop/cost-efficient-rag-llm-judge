@@ -20,6 +20,33 @@ class QueryRequest(BaseModel):
 class IngestRequest(BaseModel):
     data_dir: str = settings.data_root
 
+class SourceChunk(BaseModel):
+    id: str
+    document_id: str
+    document_hash: str
+    embedding_model: str
+    embedding_dimension: int
+    text: str
+    source_file: str
+    doc_type: str
+    chunk_index: int
+    chunk_size: int
+    chunk_overlap: int
+    distance: float | None = Field(default=None, alias="_distance")
+
+    model_config = {"populate_by_name": True}
+
+class QueryResponse(BaseModel):
+    answer: str
+    sources: list[SourceChunk]
+    latency_ms: float
+    embedding_latency_ms: float
+    retrieval_latency_ms: float
+    generation_latency_ms: float
+    token_usage: int
+    provider: str
+    model: str
+
 def resolve_ingest_dir(data_dir: str) -> str:
     """Restrict API-triggered ingestion to DATA_ROOT to avoid accidental broad scans."""
     root = Path(settings.data_root).resolve()
@@ -61,7 +88,7 @@ def ingest_documents(req: IngestRequest):
     
     return {"status": "success", "chunks_processed": len(chunks)}
 
-@app.post("/query")
+@app.post("/query", response_model=QueryResponse)
 def query_rag(req: QueryRequest):
     start_time = time.time()
 
@@ -87,11 +114,6 @@ def query_rag(req: QueryRequest):
     
     latency = (time.time() - start_time) * 1000
     
-    # Clean up results for response (remove large vector)
-    for r in results:
-        if "vector" in r:
-            del r["vector"]
-        
     log_query(
         req.query,
         latency,

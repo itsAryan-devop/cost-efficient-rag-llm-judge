@@ -56,6 +56,6 @@ Evidence:
 - Gemini key rotation in `src/gemini_client.py`.
 - Structured JSON telemetry in `src/logger.py`.
 - Cache-backed embeddings/generation/judging to reduce API usage.
-- No-context fallback using `MIN_RELEVANCE_SCORE`.
+- No-context fallback using `MAX_RETRIEVAL_DISTANCE`.
 - `README.md` includes setup, API usage, evaluation workflow, cost analysis, and discussion.
-- `tests/` currently passes with 21 tests.
+- `tests/` currently passes with 22 tests.
