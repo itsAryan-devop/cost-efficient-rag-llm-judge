@@ -1,94 +1,606 @@
 {
-  "created_at": "2026-06-22T18:35:36.862572Z",
-  "chunk_count": 11,
+  "created_at": "2026-06-22T21:17:09.069438Z",
+  "chunk_count": 75,
   "chunks": [
     {
-      "id": "40e52cfd0ee65a80b1f85511ca14f3c12950c69eca39ec99b3e9c18278cfe120",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "1d3093af6ec1918af658935857967003aebf50dd4bd83a85db0282b4485b2510",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 0,
+      "text_preview": "# Features { #features }\n## FastAPI features { #fastapi-features }\n**FastAPI** gives you the following:\n### Based on open standards { #based-on-open-standards }\n* [**OpenAPI**](https://github.com/OAI/OpenAPI-Specification) for API creation, including declarations of <dfn title=\"also known as: endpoints, routes\">path</dfn> <dfn title=\"also known as HTTP methods, as POST, GET, PUT, DELETE\">operations</dfn>, parameters, request bodies, security, etc.\n* Automatic data model documentation with [**JSO"
+    },
+    {
+      "id": "e5f09db84eb1b1dea6d7a276fd666bcc4c089de2c5b24505bb0d3f3ae7a1b9b5",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 1,
+      "text_preview": "### Automatic docs { #automatic-docs }\nInteractive API documentation and exploration web user interfaces. As the framework is based on OpenAPI, there are multiple options, 2 included by default.\n* [**Swagger UI**](https://github.com/swagger-api/swagger-ui), with interactive exploration, call and test your API directly from the browser.\n![Swagger UI interaction](https://fastapi.tiangolo.com/img/index/index-03-swagger-02.png)\n* Alternative API documentation with [**ReDoc**](https://github.com/Rebi"
+    },
+    {
+      "id": "c4a83ea1f40be658ec5b88be44aabee60af46308416fb8c59666d03cff1677d3",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 2,
+      "text_preview": "You write standard Python with types:\n```Python\nfrom datetime import date\nfrom pydantic import BaseModel\n# Declare a variable as a str\n# and get editor support inside the function\ndef main(user_id: str):\nreturn user_id\n# A Pydantic model\nclass User(BaseModel):\nid: int\nname: str\njoined: date\n```\nThat can then be used like:\n```Python\nmy_user: User = User(id=3, name=\"John Doe\", joined=\"2018-07-19\")\nsecond_user_data = {\n\"id\": 4,\n\"name\": \"Mary\",\n\"joined\": \"2018-11-30\",\n}\nmy_second_user: User = User(*"
+    },
+    {
+      "id": "4d23371ff013c5fcc57bb5b0b39494cbe8df1f22e8181156534859145e6c32c3",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 3,
+      "text_preview": "The whole framework was designed to be easy and intuitive to use, all the decisions were tested on multiple editors even before starting development, to ensure the best development experience.\nIn the Python developer surveys, it's clear [that one of the most used features is \"autocompletion\"](https://www.jetbrains.com/research/python-developers-survey-2017/#tools-and-features).\nThe whole **FastAPI** framework is designed to satisfy that. Autocompletion works everywhere.\nYou will rarely need to c"
+    },
+    {
+      "id": "95a358e94f89e2e41152e500a5b85c764098f264008604df70b1a834ad729179",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 4,
+      "text_preview": "* in [PyCharm](https://www.jetbrains.com/pycharm/):\n![editor support](https://fastapi.tiangolo.com/img/pycharm-completion.png)\nYou will get completion in code you might even consider impossible before. As for example, the `price` key inside a JSON body (that could have been nested) that comes from a request.\nNo more typing the wrong key names, coming back and forth between docs, or scrolling up and down to find if you finally used `username` or `user_name`.\n### Short { #short }\nIt has sensible *"
+    },
+    {
+      "id": "5a1068e8d217eb999f6fed2e654126af045aec8b15c145e866261541fd2cf281",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 5,
+      "text_preview": "* JSON objects (`dict`).\n* JSON array (`list`) defining item types.\n* String (`str`) fields, defining min and max lengths.\n* Numbers (`int`, `float`) with min and max values, etc.\n* Validation for more exotic types, like:\n* URL.\n* Email.\n* UUID.\n* ...and others.\nAll the validation is handled by the well-established and robust **Pydantic**.\n### Security and authentication { #security-and-authentication }\nSecurity and authentication integrated. Without any compromise with databases or data models."
+    },
+    {
+      "id": "ec7cde44ee2d8a1f7d4d9c2febf0f692d6c3d63b45205eef957efe0baa9bac9d",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 6,
+      "text_preview": "All built as reusable tools and components that are easy to integrate with your systems, data stores, relational and NoSQL databases, etc.\n### Dependency Injection { #dependency-injection }\nFastAPI includes an extremely easy to use, but extremely powerful <dfn title='also known as \"components\", \"resources\", \"services\", \"providers\"'><strong>Dependency Injection</strong></dfn> system.\n* Even dependencies can have dependencies, creating a hierarchy or **\"graph\" of dependencies**.\n* All **automatica"
+    },
+    {
+      "id": "5bd40c719c7f29ac093991586690b5e90085e3f087d5ab77ef24e5b2dd39c0de",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 7,
+      "text_preview": "* **No compromise** with databases, frontends, etc. But easy integration with all of them.\n### Unlimited \"plug-ins\" { #unlimited-plug-ins }\nOr, in other words, no need for them, import and use the code you need.\nAny integration is designed to be so simple to use (with dependencies) that you can create a \"plug-in\" for your application in 2 lines of code using the same structure and syntax used for your *path operations*.\n### Tested { #tested }\n* 100% <dfn title=\"The amount of code that is automat"
+    },
+    {
+      "id": "c769203c3569a271abd26412c1bdb4ef89e56ec6d63f9a26745e252e1c29ca63",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 8,
+      "text_preview": "**FastAPI** is fully compatible with (and based on) [**Starlette**](https://www.starlette.dev/). So, any additional Starlette code you have, will also work.\n`FastAPI` is actually a sub-class of `Starlette`. So, if you already know or use Starlette, most of the functionality will work the same way.\nWith **FastAPI** you get all of **Starlette**'s features (as FastAPI is just Starlette on steroids):\n* Seriously impressive performance. It is [one of the fastest Python frameworks available, on par wi"
+    },
+    {
+      "id": "c7aa671b793cccb69c0cddf7ec9b5a89627459e4ecc254c3662b05a0b5e5bf3c",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 9,
+      "text_preview": "* **CORS**, GZip, Static Files, Streaming responses.\n* **Session and Cookie** support.\n* 100% test coverage.\n* 100% type annotated codebase.\n## Pydantic features { #pydantic-features }\n**FastAPI** is fully compatible with (and based on) [**Pydantic**](https://docs.pydantic.dev/). So, any additional Pydantic code you have, will also work.\nIncluding external libraries also based on Pydantic, such as <abbr title=\"Object-Relational Mapper\">ORM</abbr>s and <abbr title=\"Object-Document Mapper\">ODM</ab"
+    },
+    {
+      "id": "7d2aa1e3740fd2c0306d0d5fbb1b0a9d140f04f1237647d21604d80130e22363",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 10,
+      "text_preview": "With **FastAPI** you get all of **Pydantic**'s features (as FastAPI is based on Pydantic for all the data handling):\n* **No brainfuck**:\n* No new schema definition micro-language to learn.\n* If you know Python types you know how to use Pydantic.\n* Plays nicely with your **<abbr title=\"Integrated Development Environment: similar to a code editor\">IDE</abbr>/<dfn title=\"A program that checks for code errors\">linter</dfn>/brain**:\n* Because pydantic data structures are just instances of classes you"
+    },
+    {
+      "id": "81eb58803c7816d414a83c6ce9e5084539bc221e07612f5b12dfa16ed577ab41",
+      "document_id": "71f7d486b953b277ae1aa8f6daa896f8fc4a003c2fdfa87210ec0101f8df979d",
+      "source_file": "fastapi_features.md",
+      "doc_type": "md",
+      "chunk_index": 11,
+      "text_preview": "* You can have deeply **nested JSON** objects and have them all validated and annotated.\n* **Extensible**:\n* Pydantic allows custom data types to be defined or you can extend validation with methods on a model decorated with the validator decorator.\n* 100% test coverage.\n---\n_Source: FastAPI documentation (features.md), https://github.com/fastapi/fastapi - MIT License. Retrieved 2026-06-23._"
+    },
+    {
+      "id": "2a8d0618f4a9e692f641501a3555ae6c536da8c157eb11cb8afa66afc2624e7b",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 0,
-      "text_preview": "[page 1]\nApplied AI / ML Engineering — Take-Home Assignment\nProblem 1 — Cost-Efficient RAG Application\nBackground. On a fully managed vector DB, the bill scales with stored vectors (always-on pods), so a large but lightly-queried index\nbecomes a top infra cost. Build a working RAG app on a low-cost store and prove, with numbers, that it is a credible alternative.\nObjective. A QA service over a document corpus, backed by a low-cost vector store, with honest evaluation of retrieval quality,\nanswer"
+      "text_preview": "[page 1]\nHTTP Response Status Codes (Standard)\nThis article lists standard and notable non-standard HTTP response status codes. Standardized\ncodes are defined by IETF as documented in Request for Comments (RFC) publications and\nmaintained by the IANA. Other, non-standard values are used by various servers. The descriptive\ntext after the numeric code - the reason phrase - is shown here with typical value, but in\npractice, can be different or omitted.\nStandard codes\nStatus codes defined by IETF ar"
     },
     {
-      "id": "d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "a04160a52ee6c3a9d39073aae4e96c43c05de403c86515cd19620938b316d99f",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 1,
-      "text_preview": "2. Embed chunks (record model + dimensionality); store vectors + metadata with at least one metadata filter.\n3. Top-k retrieval (k is a parameter) → grounded LLM answer that cites the chunks it used; handle 'no relevant context' without\nhallucinating.\n4. Expose as an HTTP endpoint (preferred) or CLI; config via env, no hardcoded secrets; log per-query latency, chunk count, token\nusage.\nEvaluation (the core — use a fixed set of 15–30 questions)\n• Retrieval: Recall@k / Hit Rate, MRR, nDCG@k, conte"
+      "text_preview": "body. As the HTTP/1.0 standard did not define any 1xx status codes, servers must not send a 1xx\nresponse to an HTTP/1.0 compliant client except under experimental conditions.\n100 Continue\nThe server has received the request headers and the client should proceed to send the request\nbody (in the case of a request for which a body needs to be sent, such as a POST request).\nSending a large request body to a server after a request has been rejected for inappropriate\nheaders would be inefficient. To h"
     },
     {
-      "id": "e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "fbbf4d5a04b52c61a1d56f4a3e6029a36c3b8f985ad25a852d1ff0b1127631a6",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 2,
-      "text_preview": "the trade-offs you accept.\nDeliverables\n• Runnable RAG service · evaluation harness + results file (all three layers) · cost-comparison table · README with a short\nDiscussion (when would you switch back to managed; was retrieval or generation the weak link).\nScoring (100 pts)\nArea Pts What we look for\nCorrectness & ingestion 20 End-to-end works; idempotent; sensible chunking.\nRetrieval evaluation 20 Real IR metrics, computed correctly.\nAnswer evaluation 20 Faithfulness/relevance measured, not as"
+      "text_preview": "(Forbidden) or 405 (Method Not Allowed) then it should not send the request's body. The\nresponse 417 Expectation Failed indicates that the request should be repeated without the\nExpect header as it indicates that the server does not support expectations (this is the case,\nfor example, of HTTP/1.0 servers).\n101 Switching Protocols\nThe requester has asked the server to switch protocols and the server has agreed to do so.\n102 Processing (WebDAV; RFC 2518)\nA WebDAV request may contain many sub-reque"
     },
     {
-      "id": "e27368c4ada61f607ab0d6acf2966be9a9a9ca9493a4e7947341f36ae48e8fdc",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "63712883a38af31543a7f8e1b2036a26596003454f9a8d6dc058ac7015ff179b",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 3,
-      "text_preview": "themselves biased and noisy — they can prefer the longer answer, the one seen first, or their own model family. Build a judging\npipeline and take its biases seriously.\nObjective. Given a test case { input, system_prompt, model_output, expected_output?, criteria? }, use an LLM judge to produce a\nstructured quality verdict, with concrete measures to detect and reduce judge bias.\nJudging mode. Implement at least one, explain when each fits: pointwise scoring · pairwise A-vs-B · reference-based · re"
+      "text_preview": "103 Early Hints (RFC 8297)\nUsed to return some response headers before final HTTP message.\n2xx success\nA success status indicates that the action requested by the client was received, understood,\nand accepted.\n200 OK\nStandard response for successful HTTP requests. The actual response will depend on the request\nmethod used. In a GET request, the response will contain an entity corresponding to the\nrequested resource. In a POST request, the response will contain an entity describing or\ncontaining "
     },
     {
-      "id": "65baf4139fad56d15c5913f4525917bc35a11c82ce5257193cf8f7a7aea40451",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "3ff065c799dc9135a4944bd39d4428bd535d7d6433921f8cbbdacbcb3ef16651",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 4,
-      "text_preview": "3. Aggregate per-case → suite report (pass rate, mean scores, win rate); support comparing TWO configs (prompt v1 vs v2, or\nmodel A vs B) and declaring a winner.\n4. Log every judge prompt + raw response (auditable/replayable); track judge tokens/calls; judge and generator configurable\nindependently.\nBias handling (the heart of this problem) — name it, mitigate it in code, measure it\nBias Mitigation you must implement / discuss\nPosition (A/B order) Run each pair in BOTH orders; average or require"
+      "text_preview": "occurs.\n203 Non-Authoritative Information (since HTTP/1.1)\nThe server is a transforming proxy (e.g. a Web accelerator) that received a 200 OK from its\norigin, but is returning a modified version of the origin's response.\n204 No Content\nThe server successfully processed the request, and is not returning any content.\n205 Reset Content\nThe server successfully processed the request, asks that the requester reset its document view,\nand is not returning any content.\n206 Partial Content\nThe server is d"
     },
     {
-      "id": "78c9a33a184dcfb9e596fe56ef2e19863f2e9e3e1f7253710d666cd1b2a316ed",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "a06fad8ece8fbb51c23c4bf016bfa845f9604744b20f957a6da762dc65fcf943",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 5,
-      "text_preview": "Score clustering Calibrate the scale with few-shot anchors, or switch to pairwise.\nValidate the judge (at least one)\n• Agreement with human/gold labels (agreement rate, Cohen's kappa, or correlation) · test-retest consistency (how often the\nverdict flips on re-run) · adversarial probe set (verbose-but-wrong, terse-but-correct) and whether it was fooled.\nDeliverables\n• Runnable pipeline (suite in → report out) · one judging mode + documented rubric · position-bias check with results · a judge-\nva"
+      "text_preview": "The message body that follows is by default an XML message and can contain a number of separate\nresponse codes, depending on how many sub-requests were made.\n208 Already Reported (WebDAV; RFC 5842)\nThe members of a DAV binding have already been enumerated in a preceding part of the\n(multistatus) response, and are not being included again.\n226 IM Used (RFC 3229)\nThe server has fulfilled a request for the resource, and the response is a representation of\nthe result of one or more instance-manipula"
     },
     {
-      "id": "07e4260e7b487b52fb61cb7a70975e273671578d2f55ea48cc18f069632d79e1",
-      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
-      "source_file": "assignment.pdf",
+      "id": "67c86f8b21b0c22e034507449086b9c48836fe86a9d8f2cb5296afd9a17d75c4",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
       "doc_type": "pdf",
       "chunk_index": 6,
-      "text_preview": "Bias handling 25 Biases named, mitigated in code, and measured.\nJudge validation 20 Agreement/consistency/adversarial evidence, not claims.\nComparison & engineering 15 Clean A/B call; config hygiene, cost tracking, README."
+      "text_preview": "prevent cyclical redirects.\n300 Multiple Choices\nIndicates multiple options for the resource from which the client may choose (via agent-driven\ncontent negotiation). For example, this code could be used to present multiple video format\noptions, to list files with different filename extensions, or to suggest word-sense\ndisambiguation.\n301 Moved Permanently\nThe link target was moved such that the request and future similar requests should be\nredirected to the given URI. If a client has link-editin"
     },
     {
-      "id": "61f820b9733ee4adf8b53e6c208cd574c6ec4031482e38f64364090ac16ca677",
-      "document_id": "5a77ecf2a7e424304b3b85eba12d5f78b26f84f22c8ca13b17226f432815e20b",
-      "source_file": "cost_analysis_notes.html",
+      "id": "e588e4941bddf00298e11bda1e0cb44a6f975f50cc52d2b621ad098db2da9a8f",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 7,
+      "text_preview": "for upgrading users from HTTP to HTTPS. Both Bing and Google recommend using this code to\nchange the URL of a page as it is shown in search engine results, providing that URL will\n[page 3]\npermanently change and is not due to be changed again any time soon.\n302 Found\nIndicates that the resource is accessible via an alternate URL indicated in the Location header\nfield. The HTTP/1.0 specification (which used reason phrase \"Moved Temporarily\") required the\nclient to redirect with the same method, b"
+    },
+    {
+      "id": "9085b5c5c3f30ba048124d0231b2a5725d82ebb2c4a6797322f0991daaf3ab9c",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 8,
+      "text_preview": "clarity provided by this disambiguation, the 302 code is still used in web frameworks to\npreserve compatibility with browsers that do not support HTTP/1.1. As a consequence, RFC 7231\n(the update of RFC 2616) changes the definition to allow user agents to rewrite POST to GET.\n303 See Other (since HTTP/1.1)\nIf a server responds to a POST or other non-idempotent request with this code and a location\nheader field, the client is expected to issue a GET request to the specified location. To\ntrigger a "
+    },
+    {
+      "id": "8e8c24e560da2255629d69835748f5d167a0be9322dd64eeb0d9953e3e77dd6c",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 9,
+      "text_preview": "hash URIs). For example, if http://www.example.com/id/alice identifies a person, Alice, then it\nwould be inappropriate for a server to respond to a GET request with 200 OK, as the server\ncould not deliver Alice herself. Instead, the server would respond with 303 to redirect to a\nURI that provides a description of the person Alice.\nSometimes, this code is used when providing an HTTP-based web API that needs to respond to the\ncaller immediately, but continue executing asynchronously, such as a lon"
+    },
+    {
+      "id": "fbae80d8c1c93082fc23c8675be9f76d248717851049f29c0be93a0f527900d0",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 10,
+      "text_preview": "headers If-Modified-Since or If-None-Match. In such case, there is no need to retransmit the\nresource since the client still has a previously-downloaded copy.\n305 Use Proxy (since HTTP/1.1)\nThe requested resource is available only through a proxy, the address for which is provided in\nthe response. For security reasons, many HTTP clients (such as Mozilla Firefox and Internet\nExplorer) do not obey this status code.\n306 Switch Proxy\nNo longer used. Originally meant \"Subsequent requests should use t"
+    },
+    {
+      "id": "4d6c6b28cc71914b0638e997fe1ee0ce3adba2924b7df0fe46a53a2000c376ac",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 11,
+      "text_preview": "method is not allowed to be changed when reissuing the original request. For example, a POST\nrequest should be repeated using another POST request.\n308 Permanent Redirect\nThis and all future requests should be directed to the given URI. 308 parallels the behavior of\n301, but does not allow the HTTP method to change. So, for example, submitting a form to a\npermanently redirected resource may continue smoothly.\n[page 4]\n4xx client error\nA 4xx status code is for situations in which an error seems t"
+    },
+    {
+      "id": "6d669b2c19089133d50e9e1323555e1c1c23fc8ea331c435513ec01275ab729f",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 12,
+      "text_preview": "entity to the user.\n400 Bad Request\nThe server cannot or will not process the request due to an apparent client error (e.g.,\nmalformed request syntax, size too large, invalid request message framing, or deceptive request\nrouting).\n401 Unauthorized\nSimilar to 403 Forbidden, but specifically for use when authentication is required and has\nfailed or has not yet been provided. The response must include a WWW-Authenticate header field\ncontaining a challenge applicable to the requested resource. See B"
+    },
+    {
+      "id": "34b26f0a5803b05f9ad2ab9aeacd0123172964ea87c7e0269a3da7ef21f1199a",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 13,
+      "text_preview": "some form of digital cash or micropayment scheme, as proposed, for example, by GNU Taler, but\nthat has not yet happened, and this code is not widely used. Google Developers API uses this\nstatus if a particular developer has exceeded the daily limit on requests. Sipgate uses this\ncode if an account does not have sufficient funds to start a call. Shopify uses this code when\nthe store has not paid their fees and is temporarily disabled. Stripe uses this code for failed\npayments where parameters wer"
+    },
+    {
+      "id": "90cff6e89d36e29612aa10317d7d93b3426347834555d32925490d07b4757cc9",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 14,
+      "text_preview": "The request was valid, but the server refuses action. This may be due to the user not having\npermission to a resource or needing an account of some sort, or attempting a prohibited action\n(e.g. creating a duplicate record where only one is allowed). This code is also typically used\nif the request provided authentication by answering the WWW-Authenticate header field\nchallenge, but the server did not accept that authentication. The request should not be\nrepeated.\nThis code differs from 401 in tha"
+    },
+    {
+      "id": "1820ef784c15bdc8f9b93e85b2c5318e2f3734c637ced2e258957c789e1939a8",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 15,
+      "text_preview": "authentication such as insufficient permissions of the authenticated account.\nThe Apache web server returns 403 in response to a request for URL paths that corresponded to a\nfile system directory when directory listing is disabled and there is no Directory Index\ndirective to specify an existing file to be returned to the browser. Some administrators\nconfigure the Mod proxy extension to block such requests and this will also return 403. IIS\nresponds in the same way when directory listings are den"
+    },
+    {
+      "id": "027fa73ed1b1cd944e1a507662f315f1c953094426d315ac098cd29b41392e2d",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 16,
+      "text_preview": "requests by the client are permissible.\n405 Method Not Allowed\nA request method is not supported for the requested resource (for example, a GET request on a\nform that requires data to be presented via POST, or a PUT request on a read-only resource).\n406 Not Acceptable\nThe requested resource is capable of generating only content not acceptable according to the\nAccept headers sent in the request. See Content negotiation.\n407 Proxy Authentication Required\nThe client must first authenticate itself w"
+    },
+    {
+      "id": "fa5e0c11ca1a336d7485fac3a3bfc72bbd91010c79d4cb54b3eabf314153766f",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 17,
+      "text_preview": "409 Conflict\nIndicates that the request could not be processed because of conflict in the current state of\nthe resource, such as an edit conflict between multiple simultaneous updates.\n410 Gone\nIndicates that the resource requested was previously in use but is no longer available and will\nnot be available again. This should be used when a resource has been intentionally removed and\nthe resource should be purged. Upon receiving a 410 status code, the client should not request\nthe resource in the "
+    },
+    {
+      "id": "928749528b203fa514b621b4f21ea06fc95e156850c021981aee763acbf81e02",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 18,
+      "text_preview": "resource.\n412 Precondition Failed\nThe server does not meet one of the preconditions that the requester put on the request header\nfields.\n413 Content Too Large\nThe request is larger than the server is willing or able to process. Previously called \"Request\nEntity Too Large\" and \"Payload Too Large\".\n414 URI Too Long\nThe URI provided was too long for the server to process. Often the result of too much data\nbeing encoded as a query-string of a GET request, in which case it should be converted to a\nPO"
+    },
+    {
+      "id": "526a793041c3fb7a727622ae0b85033a961567f869c8ec58ca1ae847f2a51a42",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 19,
+      "text_preview": "The client has asked for a portion of the file (byte serving), but the server cannot supply\nthat portion. For example, if the client asked for a part of the file that lies beyond the end\nof the file. Called \"Requested Range Not Satisfiable\" previously.\n[page 6]\n417 Expectation Failed\nThe server cannot meet the requirements of the Expect request-header field.\n418 I'm a teapot (RFC 2324, RFC 7168)\nThis code was defined in 1998 as one of the traditional IETF April Fools' jokes, in RFC 2324,\nHyper T"
+    },
+    {
+      "id": "a50586cb4e006b3f7749c79b8fc7a3007f97102fedd2a26fc64da7cd6270a323",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 20,
+      "text_preview": "easter egg. Sometimes, this status code is also used as a response to a blocked request,\ninstead of the more appropriate 403 Forbidden.\n421 Misdirected Request\nThe request was directed at a server that is not able to produce a response (for example\nbecause of connection reuse).\n422 Unprocessable Content\nThe request was well-formed (i.e., syntactically correct) but could not be processed.\n423 Locked (WebDAV; RFC 4918)\nThe resource that is being accessed is locked.\n424 Failed Dependency (WebDAV; R"
+    },
+    {
+      "id": "a0dd2ef6e329101f9248ed2e30782d8d7b4ea3e02dfdfed0560b16ce71b5f33c",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 21,
+      "text_preview": "field.\n428 Precondition Required (RFC 6585)\nThe origin server requires the request to be conditional. Intended to prevent the 'lost update'\nproblem, where a client GETs a resource's state, modifies it, and PUTs it back to the server,\nwhen meanwhile a third party has modified the state on the server, leading to a conflict.\n429 Too Many Requests (RFC 6585)\nThe user has sent too many requests in a given amount of time. Intended for use with\nrate-limiting schemes.\n431 Request Header Fields Too Large"
+    },
+    {
+      "id": "d9bf755372d94da152e5e451208b5536c3b4793039724ddb32300b314674b000",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 22,
+      "text_preview": "resources that includes the requested resource. The code 451 was chosen as a reference to the\nnovel Fahrenheit 451.\n5xx server error\n5xx status indicates that the server is aware that it has encountered an error or is otherwise\nincapable of performing the request. Except when responding to a HEAD request, the server\nshould include an entity containing an explanation of the error situation, and indicate whether\nit is a temporary or permanent condition. Likewise, user agents should display any inc"
+    },
+    {
+      "id": "c9768b821e9a129c51eb44a586557857de2599e753173b757ff325fdc9e2e24c",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 23,
+      "text_preview": "request. Usually this implies future availability (e.g., a new feature of a web-service API).\n502 Bad Gateway\nThe server was acting as a gateway or proxy and received an invalid response from the upstream\nserver.\n503 Service Unavailable\nThe server cannot handle the request (because it is overloaded or down for maintenance).\nGenerally, this is a temporary state.\n504 Gateway Timeout\nThe server was acting as a gateway or proxy and did not receive a timely response from the\nupstream server.\n505 HTTP"
+    },
+    {
+      "id": "678fdc03a99a6299744b381ba7befd7e48c2e62b02911ec5ce8c30b68a702488",
+      "document_id": "5a096484156c9eb9bd8efc9b05b5e07fe83f2604c39811d2687197ca1e340ba0",
+      "source_file": "http_status_codes.pdf",
+      "doc_type": "pdf",
+      "chunk_index": 24,
+      "text_preview": "508 Loop Detected (WebDAV; RFC 5842)\nThe server detected an infinite loop while processing the request (sent instead of 208 Already\nReported).\n510 Not Extended (RFC 2774)\nFurther extensions to the request are required for the server to fulfil it.\n511 Network Authentication Required (RFC 6585)\nThe client needs to authenticate to gain network access. Intended for use by intercepting\nproxies used to control access to the network (e.g., \"captive portals\" used to require\nagreement to Terms of Service"
+    },
+    {
+      "id": "5b26b7c93ddbe6e956a201eedf877f7ba2df2d2e779934a0e643d028988c8518",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
       "doc_type": "html",
       "chunk_index": 0,
-      "text_preview": "Cost Analysis Notes\nCost Analysis Notes\nLanceDB was selected as the low-cost vector store because it runs embedded with the application and avoids an always-on managed vector database bill.\nThe cost model compares 100K, 1M, and 10M stored vectors. The assumptions include 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector.\nLocal storage is estimated at 0.08 dollars per GB per month. The managed vector database baseline is estimated at 70 dollars"
+      "text_preview": "Vector Search and Retrieval-Augmented Generation\nVector Search and Retrieval-Augmented Generation\nA vector database, vector store or vector search engine is a database that stores and retrieves embeddings of data in vector space. Vector databases typically implement approximate nearest neighbor algorithms so users can search for records semantically similar to a given input, unlike traditional databases which primarily look up records by exact match. Use-cases for vector databases include simila"
     },
     {
-      "id": "fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d",
-      "document_id": "f10d7c91aa260599b94e15dc1337d08dc739368d70d67e6736693426705f39f9",
-      "source_file": "rag_architecture_notes.md",
-      "doc_type": "md",
-      "chunk_index": 0,
-      "text_preview": "# RAG Architecture Notes\nThe application uses FastAPI to expose a runnable HTTP service. The main endpoints are `/health`, `/ingest`, and `/query`.\nThe ingestion pipeline supports PDF, HTML, Markdown, and plain text files. It normalizes extracted text, splits content into chunks, and stores deterministic SHA-256 identifiers for documents and chunks.\nIdempotent re-ingestion is handled by deleting existing rows with the same chunk IDs before inserting updated rows. This prevents duplicate vectors "
-    },
-    {
-      "id": "daab8d663e985d69481108657adad7addf0314160d0f30b266c3ddf2775c69fe",
-      "document_id": "f10d7c91aa260599b94e15dc1337d08dc739368d70d67e6736693426705f39f9",
-      "source_file": "rag_architecture_notes.md",
-      "doc_type": "md",
+      "id": "3e5632a3942399873c4b6d93ab610fc665e2315d9cf791e6a13db6ff9f46e0cf",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
       "chunk_index": 1,
-      "text_preview": "The generation step builds a grounded prompt from retrieved chunks. If no relevant chunks are retrieved, the system returns a no-context response instead of hallucinating.\nPer-query telemetry is emitted as structured JSON. The telemetry includes latency in milliseconds, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped."
+      "text_preview": "Vector embeddings are mathematical representations of data in a high-dimensional space. In this space, each dimension corresponds to a feature of the data, with the number of dimensions ranging from a few hundred to tens of thousands, depending on the complexity of the data being represented. Each data item is represented by one vector in this space. Words, phrases, or entire documents, as well as images, audio, and other types of data, can all be vectorized.\nThese feature vectors may be compute"
     },
     {
-      "id": "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559",
-      "document_id": "aed2ae5d6a8803ff7ea32f0e415e846148656886f4a21eb5d6e19cf60881984f",
-      "source_file": "sample_rag_notes.md",
-      "doc_type": "md",
-      "chunk_index": 0,
-      "text_preview": "# RAG Service Notes\nThe default chunk size is 1000 characters and the default chunk overlap is 200 characters.\nThe application uses LanceDB as the embedded vector store because it avoids always-on vector database infrastructure.\nThe service exposes an ingestion endpoint and a query endpoint through FastAPI.\nEach query should log latency, retrieved chunk count, and token usage so the system can be evaluated honestly."
+      "id": "0247c3a6a8f8b77ea676132ced599fd0bb5df8371fcecd20cc1ee4706f3d27fe",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 2,
+      "text_preview": "Techniques\nCommon techniques for similarity search on high-dimensional vectors include:\nHierarchical Navigable Small World (HNSW) graphs\nLocality-sensitive hashing (LSH) and sketching\nProduct quantization (PQ)\nInverted files\nThese techniques may also be combined in vector search systems.\nIn recent benchmarks, HNSW-based implementations have been among the best performers. Conferences such as the International Conference on Similarity Search and Applications (SISAP) and the Conference on Neural I"
+    },
+    {
+      "id": "28bc5c7529287a566af7c31c41ab88971a0f8c60a63e00c40bd82a814dd489e7",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 3,
+      "text_preview": "Retrieval-augmented generation\nAn especially common use-case for vector databases is in retrieval-augmented generation (RAG), a method to improve domain-specific responses of large language models. The retrieval component of a RAG can be any search system, but is most often implemented as a vector database. Text documents describing the domain of interest are collected, and for each document or document section, a feature vector (known as an \"embedding\") is computed, typically using a deep learn"
+    },
+    {
+      "id": "4e39e937a44cc2080f7917be657c95631a7218c56b865a948889c8805852f48a",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 4,
+      "text_preview": "Implementations\nNearest neighbor search\nNearest neighbor search (NNS), as a form of proximity search, is the optimization problem of finding the point in a given set that is closest (or most similar) to a given point. Closeness is typically expressed in terms of a dissimilarity function: the less similar the objects, the larger the function values.\nFormally, the nearest neighbor (NN) search problem is defined as follows: given a set S of points in a space M and a query point\nq\n∈\nM\n{\\displaystyle"
+    },
+    {
+      "id": "85ef13eeb4f8caa041fbd31ea6914dc6edb29b96602e707675dc39527ba15f03",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 5,
+      "text_preview": "Most commonly M is a metric space and dissimilarity is expressed as a distance metric, which is symmetric and satisfies the triangle inequality. Even more common, M is taken to be the d-dimensional vector space where dissimilarity is measured using the Euclidean distance, Manhattan distance or other distance metric. However, the dissimilarity function can be arbitrary. One example is asymmetric Bregman divergence, for which the triangle inequality does not hold.\nApplications\nThe nearest neighbor"
+    },
+    {
+      "id": "e20b598d774f54b8ce74c75c5592bfbf83eb93ee32e104c66d96edb755fbbf2b",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 6,
+      "text_preview": "Cryptanalysis – for lattice problem\nDatabases – e.g. content-based image retrieval\nCoding theory – see maximum likelihood decoding\nSemantic search\nVector databases, where nearest-neighbor lookup over embeddings is used to retrieve semantically similar records\nRetrieval-augmented generation systems, where nearest-neighbor retrieval over embeddings is used to fetch candidate passages or documents before generation\nData compression – see MPEG-2 standard\nRobotic sensing\nRecommendation systems, e.g. "
+    },
+    {
+      "id": "4fc34fa49e867a383dfea8235d5ab82b2d17ad0ded16c5797042aac9c9937665",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 7,
+      "text_preview": "Chemical similarity\nSampling-based motion planning\nMethods\nVarious solutions to the NNS problem have been proposed. The quality and usefulness of the algorithms are determined by the time complexity of queries as well as the space complexity of any search data structures that must be maintained. The informal observation usually referred to as the curse of dimensionality states that there is no general-purpose exact solution for NNS in high-dimensional Euclidean space using polynomial preprocessi"
+    },
+    {
+      "id": "885b5c4bf728b40e20e43c199b49473f3bc6d828d7ba3bbdf5a5ecd67e393d02",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 8,
+      "text_preview": "Exact methods\nLinear search\nThe simplest solution to the NNS problem is to compute the distance from the query point to every other point in the database, keeping track of the \"best so far\". This algorithm, sometimes referred to as the naive approach, has a running time of O(dN), where N is the cardinality of S and d is the dimensionality of S. There are no search data structures to maintain, so the linear search has no space complexity beyond the storage of the database. Naive search can, on av"
+    },
+    {
+      "id": "0b6e82daca5d6897b2b710cd9bab3933efabfcf6dccc24a13ec0b4889d4151cd",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 9,
+      "text_preview": "Space partitioning\nSince the 1970s, the branch and bound methodology has been applied to the problem. In the case of Euclidean space, this approach encompasses spatial index or spatial access methods. Several space-partitioning methods have been developed for solving the NNS problem. Perhaps the simplest is the k-d tree, which iteratively bisects the search space into two regions containing half of the points of the parent region. Queries are performed via traversal of the tree from the root to "
+    },
+    {
+      "id": "7d848e0e855f0f184564e0bbc51d230b4dd06448582a33ec56f55a149c4cfcbe",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 10,
+      "text_preview": "Alternatively the R-tree data structure was designed to support nearest neighbor search in dynamic context, as it has efficient algorithms for insertions and deletions such as the R* tree. R-trees can yield nearest neighbors not only for Euclidean distance, but can also be used with other distances.\nIn the case of general metric space, the branch-and-bound approach is known as the metric tree approach. Particular examples include vp-tree and BK-tree methods.\nUsing a set of points taken from a 3-"
+    },
+    {
+      "id": "873f3188753e017a5528c9f87c9a34018fbcd0a614802b8085c7c7bbf0f7d6cb",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 11,
+      "text_preview": "(Strictly speaking, no such point may exist, because it may not be unique. But in practice, usually we only care about finding any one of the subset of all point-cloud points that exist at the shortest distance to a given query point.) The idea is, for each branching of the tree, guess that the closest point in the cloud resides in the half-space containing the query point. This may not be the case, but it is a good heuristic. After having recursively gone through all the trouble of solving the "
+    },
+    {
+      "id": "9fd04d7eb184769ce5d8dcb685450afc526ff454f6ddda8cd9b5eab2dca26407",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 12,
+      "text_preview": "distance is greater than that returned in the earlier result, then clearly there is no need to search the other half-space. If there is such a need, then you must go through the trouble of solving the problem for the other half space, and then compare its result to the former result, and then return the proper result. The performance of this algorithm is nearer to logarithmic time than linear time when the query point is near the cloud, because as the distance between the query point and the clo"
+    },
+    {
+      "id": "7ae9dcb5b7a91da1488bab2ffbf564ab0d29603fb62932fd70438ec88ed75729",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 13,
+      "text_preview": "Approximation methods\nAn approximate nearest neighbor search algorithm is allowed to return points whose distance from the query is at most\nc\n{\\displaystyle c}\ntimes the distance from the query to its nearest points. The appeal of this approach is that, in many cases, an approximate nearest neighbor is almost as good as the exact one. In particular, if the distance measure accurately captures the notion of user quality, then small differences in the distance should not matter.\nGreedy search in p"
+    },
+    {
+      "id": "0c24877948b8dddfc8afd6ff7993de06a0b6eadf6fbfb5d5e3d0eb862a852d15",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 14,
+      "text_preview": "G\n(\nV\n,\nE\n)\n{\\displaystyle G(V,E)}\nin which every point\nx\ni\n∈\nS\n{\\displaystyle x_{i}\\in S}\nis uniquely associated with vertex\nv\ni\n∈\nV\n{\\displaystyle v_{i}\\in V}\n. The search for the nearest neighbors to a query q in the set S takes the form of searching for the vertex in the graph\nG\n(\nV\n,\nE\n)\n{\\displaystyle G(V,E)}\n.\nThe basic algorithm – greedy search – works as follows: search starts from an enter-point vertex\nv\ni\n∈\nV\n{\\displaystyle v_{i}\\in V}\nby computing the distances from the query q to ea"
+    },
+    {
+      "id": "01d9bd931ff96574b97127a07de669b009acedaa7b7273edd8237c0d15f846a6",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 15,
+      "text_preview": "v\ni\n∈\nV\n{\\displaystyle v_{i}\\in V}\nby computing the distances from the query q to each vertex of its neighborhood\n{\nv\nj\n:\n(\nv\ni\n,\nv\nj\n)\n∈\nE\n}\n{\\displaystyle \\{v_{j}:(v_{i},v_{j})\\in E\\}}\n, and then finds a vertex with the minimal distance value. If the distance value between the query and the selected vertex is smaller than the one between the query and the current element, then the algorithm moves to the selected vertex, and it becomes new enter-point. The algorithm stops when it reaches a loca"
+    },
+    {
+      "id": "432537feee997b8d9a6ac7cc771f2471b08e6b8a5506872c367cc54d340cf1d0",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 16,
+      "text_preview": "E\nn\n{\\displaystyle \\mathbb {E} ^{n}}\n, and in the Navigable Small World, Metrized Small World and HNSW algorithms for the general case of spaces with a distance function. These works were preceded by a pioneering paper by Toussaint, in which he introduced the concept of a relative neighborhood graph.\nLocality sensitive hashing\nLocality sensitive hashing (LSH) is a technique for grouping points in space into 'buckets' based on some distance metric operating on the points. Points that are close to"
+    },
+    {
+      "id": "3f36122c89775bdc7d7a282dd523a99b2e66986a53738f2eaaa6aa790a4a1f59",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 17,
+      "text_preview": "Projected radial search\nIn the special case where the data is a dense 3D map of geometric points, the projection geometry of the sensing technique can be used to dramatically simplify the search problem.\nThis approach requires that the 3D data is organized by a projection to a two-dimensional grid and assumes that the data is spatially smooth across neighboring grid cells with the exception of object boundaries.\nThese assumptions are valid when dealing with 3D sensor data in applications such as"
+    },
+    {
+      "id": "3043e7ab7db29b1dee7b043bf2356628dc83ef6e123742936828c97bfa8856a1",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 18,
+      "text_preview": "In practice this technique has an average search time of O(1) or O(K) for the k-nearest neighbor problem when applied to real world stereo vision data.\nVector approximation files\nIn high-dimensional spaces, tree indexing structures become useless because an increasing percentage of the nodes need to be examined anyway. To speed up linear search, a compressed version of the feature vectors stored in RAM is used to prefilter the datasets in a first run. The final candidates are determined in a sec"
+    },
+    {
+      "id": "e420f6437590c76e317a0ac0a9d5eaa921687e310177dee028f0f7076c23fbad",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 19,
+      "text_preview": "Compression/clustering based search\nThe VA-file approach is a special case of a compression based search, where each feature component is compressed uniformly and independently. The optimal compression technique in multidimensional spaces is Vector Quantization (VQ), implemented through clustering. The database is clustered and the most \"promising\" clusters are retrieved. Huge gains over VA-File, tree-based indexes and sequential scan have been observed. Also note the parallels between clusterin"
+    },
+    {
+      "id": "a667d04e75df1ab82164b7f8f4e64ef3439160b61904a6077a82a25b6707fc29",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 20,
+      "text_preview": "Variants\nThere are numerous variants of the NNS problem and the two most well-known are the k-nearest neighbor search and the ε-approximate nearest neighbor search.\nk-nearest neighbors\nk-nearest neighbor search identifies the top k nearest neighbors to the query. This technique is commonly used in predictive analytics to estimate or classify a point based on the consensus of its neighbors. k-nearest neighbor graphs are graphs in which every point is connected to its k nearest neighbors.\nApproxim"
+    },
+    {
+      "id": "9e6911492e4e37ad6fc5e30aa212f33dfd467e74f4b9bf3f116d82c30224cca7",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 21,
+      "text_preview": "Algorithms that support the approximate nearest neighbor search include locality-sensitive hashing, best bin first and balanced box-decomposition tree based search.\nNearest neighbor distance ratio\nNearest neighbor distance ratio does not apply the threshold on the direct distance from the original point to the challenger neighbor but on a ratio of it depending on the distance to the previous neighbor. It is used in CBIR to retrieve pictures through a \"query by example\" using the similarity betwe"
+    },
+    {
+      "id": "24abfc163d4181af4471ec0be24f7a55e5c1eb4e7f098229cf865acaab370c1a",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 22,
+      "text_preview": "All nearest neighbors\nFor some applications (e.g. entropy estimation), we may have N data-points and wish to know which is the nearest neighbor for every one of those N points. This could, of course, be achieved by running a nearest-neighbor search once for every point, but an improved strategy would be an algorithm that exploits the information redundancy between these N queries to produce a more efficient search. As a simple example: when we find the distance from point X to point Y, that also"
+    },
+    {
+      "id": "d6d9b70666e0e932094c011775abf21aaab5ac00210065f905560bf11b7be45d",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 23,
+      "text_preview": "Retrieval-augmented generation (overview)\nRetrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources. With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data. This allows LLMs to use domain-specific and/or updated information that is not available in the training data. For examp"
+    },
+    {
+      "id": "2b7a00ba40be00f4918e0a32a7ef68df2ca7b32ef433418670ae64bf3b93e912",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 24,
+      "text_preview": "RAG improves LLMs by incorporating information retrieval before generating responses. Unlike LLMs that rely on static training data, RAG pulls relevant text from databases, uploaded documents, or web sources. According to Ars Technica, \"RAG is a way of improving LLM performance, in essence by blending the LLM process with a web search or other document look-up process to help LLMs stick to the facts.\" This method helps reduce AI hallucinations, which have caused chatbots to describe policies tha"
+    },
+    {
+      "id": "e984516e7e3aa06ac5263fabe2cbef70c7ac03dc951d06125dddeb723eeba997",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 25,
+      "text_preview": "The term retrieval-augmented generation (RAG) was introduced in a 2020 paper that described combining a parametric language model with a non-parametric external memory accessed through retrieval at inference time.\nRAG and LLM limitations"
+    },
+    {
+      "id": "1887865c74f2e082cd29aad913ecf6df92335ca941595417c07f74905871fb71",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 26,
+      "text_preview": "RAG and LLM limitations\nLLMs can provide incorrect information. For example, when Google first demonstrated its LLM tool \"Google Bard\" (later re-branded to Gemini), the LLM provided incorrect information about the James Webb Space Telescope. This error contributed to a $100 billion decline in Google's stock value. RAG is used to prevent these errors, but it does not solve all the problems. For example, LLMs can generate misinformation even when pulling from factually correct sources if they misi"
+    },
+    {
+      "id": "da294c369e60626c908811da7ae91a570790faf4e1e4fb599c9acffd0b60b040",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 27,
+      "text_preview": "LLMs with RAG are programmed to prioritize new information. This technique has been called \"prompt stuffing.\" Without prompt stuffing, the LLM's input is generated by a user; with prompt stuffing, additional relevant context is added to this input to guide the model's response. This approach provides the LLM with key information early in the prompt, encouraging it to prioritize the supplied data over pre-existing training knowledge.\nProcess"
+    },
+    {
+      "id": "2af1d7926f20adb28a36a14108acf8f126b820c256ceaf3aa4c182ccc1f29725",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 28,
+      "text_preview": "Process\nRetrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set. Ars Technica notes that \"when new information becomes available, rather than having to retrain the model, all that's needed is to augment the model's external knowledge base with the updated information\" (\"augmentation\"). IBM states that \"in the generative phase, the LLM "
+    },
+    {
+      "id": "ea6d107688c20cd73ec8595d37d656e060db1fa61ae240f21db865d85932da1a",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 29,
+      "text_preview": "Given a user query, a document retriever is first called to select the most relevant documents that will be used to augment the query. This comparison can be done using a variety of methods, which depend in part on the type of indexing used.\nThe model feeds this relevant retrieved information into the LLM via prompt engineering of the user's original query. Newer implementations (as of 2023) can also incorporate specific augmentation modules with abilities such as expanding queries into multiple"
+    },
+    {
+      "id": "1b5e3bb7e68e295be2a9c6c83da2bf18b16cf96896c1a3e13f3b25d7f0f31055",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 30,
+      "text_preview": "Applications\nRetrieval-augmented generation is used in applications where generated responses need to be grounded in external or frequently updated information.\nIn healthcare, RAG has been studied as a way to ground large language model outputs in external medical knowledge sources, although reviews have noted continuing challenges around evaluation, ethics, and clinical reliability.\nImprovements\nImprovements to the basic process above can be applied at different stages in the RAG flow.\nEncoder\n"
+    },
+    {
+      "id": "7a34843eebab47f8ebf417cb48dd25b32eb1eb8207b412c06eb68163a243b4e9",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 31,
+      "text_preview": "Performance improves by optimizing how vector similarities are calculated. Dot products enhance similarity scoring, while approximate nearest neighbor (ANN) searches improve retrieval efficiency over K-nearest neighbors (KNN) searches.\nAccuracy may be improved with Late Interactions, which allow the system to compare words more precisely after retrieval. This helps refine document ranking and improve search relevance.\nHybrid vector approaches may be used to combine dense vector representations w"
+    },
+    {
+      "id": "4905113e6cad8de53c002215524f1d015c1ab23f19541d0329c406a517d0091d",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 32,
+      "text_preview": "Retriever-centric methods\nThese methods aim to enhance the quality of document retrieval in vector databases:\nPre-training the retriever using the Inverse Cloze Task (ICT), a technique that helps the model learn retrieval patterns by predicting masked text within documents.\nSupervised retriever optimization aligns retrieval probabilities with the generator model's likelihood distribution. This involves retrieving the top-k vectors for a given prompt, scoring the generated response's perplexity, "
+    },
+    {
+      "id": "400aac136b4e9d043eebf0492a9f8d93384b97d6678377f2f3cccd3bfa67adf3",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 33,
+      "text_preview": "Reranking techniques can refine retriever performance by prioritizing the most relevant retrieved documents during training.\nLanguage model\nBy redesigning the language model with the retriever in mind, a 25-time smaller network can get comparable perplexity as its much larger counterparts. Because it is trained from scratch, this method (Retro) incurs the high cost of training runs that the original RAG scheme avoided. The hypothesis is that by giving domain knowledge during training, Retro need"
+    },
+    {
+      "id": "168347122e4739a273abeb192f30109bfcdc1c7a18032d1d8b9d529dd1365ebf",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 34,
+      "text_preview": "Chunking\nChunking involves various strategies for breaking up the data into vectors so the retriever can find details in it.\nThree types of chunking strategies are:\nFixed length with overlap. This is fast and easy. Overlapping consecutive chunks helps to maintain semantic context across chunks.\nSyntax-based chunks can break the document up into sentences. Libraries such as spaCy or NLTK can also help.\nFile format-based chunking. Certain file types have natural chunks built in, and it's best to r"
+    },
+    {
+      "id": "4eaf4dda6727044f109018559ff1340c697560d1ecae7c31b17e10b8ff73020f",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 35,
+      "text_preview": "or base64 encoded\nelements intact. Similar considerations should be taken for pdf files. Libraries such as Unstructured or LangChain can assist with this method.\nHybrid search\nSometimes vector database searches can miss key facts needed to answer a user's question. One way to mitigate this is to do a traditional text search, add those results to the text chunks linked to the retrieved vectors from the vector search, and feed the combined hybrid text into the language model for generation.\nChalle"
+    },
+    {
+      "id": "807f0ba58e94e9b500d6b9daa39731c679d2b89126ea4cbec8f081169cdb7f84",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 36,
+      "text_preview": "Challenges\nRAG does not prevent hallucinations in LLMs. According to Ars Technica, \"It is not a direct solution because the LLM can still hallucinate around the source material in its response.\"\nWhile RAG improves the accuracy of large language models (LLMs), it does not eliminate all challenges. One limitation is that while RAG reduces the need for frequent model retraining, it does not remove it entirely. Additionally, LLMs may struggle to recognize when they lack sufficient information to pro"
+    },
+    {
+      "id": "8129c265cdd40501e873bcc4ce0727f7d8aeac0192a542f897d5f88526adebef",
+      "document_id": "718720b17ecdd90b5d43d438c1d7a62c7fc222f8736ace88f15f8099a3ef9267",
+      "source_file": "vector_search_and_rag.html",
+      "doc_type": "html",
+      "chunk_index": 37,
+      "text_preview": "RAG poisoning\nRAG systems may retrieve factually correct but misleading sources, leading to errors in interpretation. In some cases, an LLM may extract statements from a source without considering its context, resulting in an incorrect conclusion. Additionally, when faced with conflicting information, RAG models may struggle to determine which source is accurate. The worst case outcome of this limitation is that the model may combine details from multiple sources producing responses that merge o"
     }
   ]
 }

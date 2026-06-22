@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from pathlib import Path
 from typing import Optional
 from .config import settings
+from .ingest import embed_chunks
 from .ingestion import process_documents
 from .embedding import get_embedding
 from .storage import upsert_vectors, search
@@ -78,10 +79,7 @@ def ingest_documents(req: IngestRequest):
         return {"status": "success", "message": "No documents found or processed.", "chunks_processed": 0}
         
     try:
-        for chunk in chunks:
-            chunk["vector"] = get_embedding(chunk["text"], input_type="document")
-            chunk["embedding_model"] = settings.embedding_model
-            chunk["embedding_dimension"] = settings.embedding_dimension
+        embed_chunks(chunks)
         upsert_vectors(chunks)
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Ingestion failed: {exc}") from exc
