@@ -4,84 +4,88 @@ import pytest
 
 from eval.llm_judge import (
     _parse_answer_judge_response,
-    _parse_judge_response,
-    evaluate_answer_detail,
-    evaluate_faithfulness_detail,
+    _parse_graded_score,
+    evaluate_answer,
 )
 from src.config import settings
 
 
-def test_parse_judge_response_reads_final_score_and_rationale():
-    score, rationale = _parse_judge_response(
-        "The answer is supported by the provided context.\nSCORE: 1"
-    )
-
-    assert score == 1
-    assert "supported" in rationale
-
-
-def test_parse_judge_response_rejects_missing_score():
-    with pytest.raises(ValueError):
-        _parse_judge_response("Looks good to me.")
-
-
-def test_parse_answer_judge_response_reads_json_scores_and_rationales():
+def test_parse_answer_judge_response_reads_graded_scores_and_rationales():
     raw = json.dumps(
         {
-            "faithfulness_score": 1,
+            "faithfulness_score": 5,
             "faithfulness_rationale": "All claims are supported by the cited chunks.",
-            "relevance_score": 0,
-            "relevance_rationale": "The answer addresses a different question.",
+            "relevance_score": 2,
+            "relevance_rationale": "The answer mostly addresses a different question.",
         }
     )
-
-    faith_score, faith_reason, relevance_score, relevance_reason = _parse_answer_judge_response(raw)
-
-    assert faith_score == 1
+    faith, faith_reason, rel, rel_reason = _parse_answer_judge_response(raw)
+    assert faith == 5
     assert "supported" in faith_reason
-    assert relevance_score == 0
-    assert "different question" in relevance_reason
+    assert rel == 2
+    assert "different question" in rel_reason
 
 
 def test_parse_answer_judge_response_accepts_fenced_json_with_trailing_comma():
     raw = """```json
 {
-  "faithfulness_score": 1,
-  "faithfulness_rationale": "The answer is grounded.",
-  "relevance_score": 1,
-  "relevance_rationale": "The answer addresses the query.",
+  "faithfulness_score": 4,
+  "faithfulness_rationale": "Grounded.",
+  "relevance_score": 5,
+  "relevance_rationale": "On topic.",
 }
 ```"""
-
-    faith_score, faith_reason, relevance_score, relevance_reason = _parse_answer_judge_response(raw)
-
-    assert faith_score == 1
-    assert faith_reason == "The answer is grounded."
-    assert relevance_score == 1
-    assert relevance_reason == "The answer addresses the query."
+    faith, _, rel, _ = _parse_answer_judge_response(raw)
+    assert faith == 4
+    assert rel == 5
 
 
 def test_parse_answer_judge_response_rejects_invalid_json():
     with pytest.raises(ValueError):
-        _parse_answer_judge_response("faithfulness_score: 1")
+        _parse_answer_judge_response("faithfulness_score: 5")
 
 
-def test_mock_judge_returns_rationale(monkeypatch):
+def test_parse_graded_score_rejects_out_of_range():
+    with pytest.raises(ValueError):
+        _parse_graded_score(0, "faithfulness_score")
+    with pytest.raises(ValueError):
+        _parse_graded_score(6, "faithfulness_score")
+    assert _parse_graded_score(3, "faithfulness_score") == 3
+
+
+def test_mock_judge_scores_grounded_answer_high(monkeypatch):
     monkeypatch.setattr(settings, "judge_provider", "mock")
+    context = (
+        "502 Bad Gateway means the server, acting as a gateway or proxy, received an invalid "
+        "response from the upstream server."
+    )
+    query = "What does HTTP status code 502 Bad Gateway mean?"
+    answer = "502 Bad Gateway means a gateway or proxy received an invalid response from the upstream server."
+    result = evaluate_answer(query, context, answer)
+    assert result.faithfulness_score >= 4
+    assert result.provider == "mock"
 
-    result = evaluate_faithfulness_detail("context", "answer")
 
-    assert result.score == 1
-    assert result.rationale
-    assert result.raw_response.endswith("SCORE: 1")
-
-
-def test_mock_answer_judge_returns_both_scores(monkeypatch):
+def test_mock_judge_scores_planted_wrong_answer_low(monkeypatch):
+    """The whole point of the judge: a confidently-wrong answer must score low."""
     monkeypatch.setattr(settings, "judge_provider", "mock")
+    context = (
+        "502 Bad Gateway means the server, acting as a gateway or proxy, received an invalid "
+        "response from the upstream server."
+    )
+    query = "What does HTTP status code 502 Bad Gateway mean?"
+    wrong = "502 Bad Gateway means the client supplied invalid login credentials and must authenticate again."
+    result = evaluate_answer(query, context, wrong)
+    assert result.faithfulness_score <= 2
 
-    result = evaluate_answer_detail("query", "context", "answer")
 
-    assert result.faithfulness_score == 1
-    assert result.faithfulness_rationale
-    assert result.relevance_score == 1
-    assert result.relevance_rationale
+def test_mock_judge_scores_verbose_unsupported_answer_low(monkeypatch):
+    monkeypatch.setattr(settings, "judge_provider", "mock")
+    context = "502 Bad Gateway means a proxy received an invalid response from the upstream server."
+    query = "What does HTTP status code 502 Bad Gateway mean?"
+    verbose = (
+        "The 502 status is a profound meditation on the ephemeral nature of distributed consensus, "
+        "entropy, and the cosmic ballet of asynchronous existence."
+    )
+    result = evaluate_answer(query, context, verbose)
+    assert result.faithfulness_score <= 2

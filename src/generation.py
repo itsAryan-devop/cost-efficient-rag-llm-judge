@@ -5,6 +5,7 @@ from groq import Groq
 from .config import settings
 from .embedding import cache
 from .gemini_client import call_with_gemini_key
+from .retry import retry_on_transient
 
 NO_CONTEXT_MESSAGE = "I could not find relevant context in the indexed documents to answer this question."
 
@@ -45,13 +46,17 @@ def _groq_generate(prompt: str) -> GenerationResult:
     if not settings.groq_api_key:
         raise RuntimeError("GROQ_API_KEY is required when GENERATION_PROVIDER=groq.")
     client = Groq(api_key=settings.groq_api_key)
-    response = client.chat.completions.create(
-        model=settings.groq_model,
-        messages=[
-            {"role": "system", "content": "You answer only from provided context and cite chunk IDs."},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0,
+    response = retry_on_transient(
+        lambda: client.chat.completions.create(
+            model=settings.groq_model,
+            messages=[
+                {"role": "system", "content": "You answer only from provided context and cite chunk IDs."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0,
+        ),
+        purpose="generation",
+        max_retries=max(1, settings.gemini_max_retries + 1),
     )
     usage = getattr(response, "usage", None)
     return GenerationResult(
@@ -95,10 +100,15 @@ Question:
 
 Answer:"""
 
-def generate_answer(query: str, retrieved_chunks: list[dict]) -> GenerationResult:
+def generate_answer(
+    query: str, retrieved_chunks: list[dict], use_cache: bool = True
+) -> GenerationResult:
     """
-    Generates an answer using Gemini given the query and retrieved context chunks.
+    Generates a grounded answer given the query and retrieved context chunks.
     Handles 'no relevant context' appropriately.
+
+    Set ``use_cache=False`` to bypass the cache read so latency can be measured
+    cold (the result is still cached for later warm calls).
     """
     provider = settings.generation_provider.lower()
     model = settings.groq_model if provider == "groq" else settings.generation_model
@@ -113,7 +123,7 @@ def generate_answer(query: str, retrieved_chunks: list[dict]) -> GenerationResul
 
     prompt = build_prompt(query, retrieved_chunks)
     key = _cache_key(prompt, provider, model)
-    if key in cache:
+    if use_cache and key in cache:
         return GenerationResult(**cache[key])
 
     if provider == "mock":

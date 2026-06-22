@@ -1,77 +1,302 @@
 [
   {
-    "query": "What is the objective of Problem 1?",
-    "relevant_chunk_ids": ["40e52cfd0ee65a80b1f85511ca14f3c12950c69eca39ec99b3e9c18278cfe120"],
-    "reference_answer": "Problem 1 asks for a QA service over a document corpus backed by a low-cost vector store, with evaluation of retrieval quality, answer quality, latency, and cost."
+    "query": "Which two open standards is FastAPI based on?",
+    "relevant_chunk_ids": [
+      "1d3093af6ec1918af658935857967003aebf50dd4bd83a85db0282b4485b2510"
+    ],
+    "reference_answer": "FastAPI is based on OpenAPI (for API creation) and JSON Schema (for data model documentation).",
+    "source_files": [
+      "fastapi_features.md"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
   },
   {
-    "query": "Which file types must the RAG ingestion pipeline support?",
-    "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c", "fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d"],
-    "reference_answer": "The pipeline must support PDF, HTML, and Markdown ingestion."
+    "query": "Which two interactive API documentation interfaces does FastAPI include by default?",
+    "relevant_chunk_ids": [
+      "e5f09db84eb1b1dea6d7a276fd666bcc4c089de2c5b24505bb0d3f3ae7a1b9b5"
+    ],
+    "reference_answer": "Swagger UI and ReDoc.",
+    "source_files": [
+      "fastapi_features.md"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
   },
   {
-    "query": "What must be configurable about chunking?",
-    "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c", "fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d", "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559"],
-    "reference_answer": "Chunk size and chunk overlap must be configurable, with defaults of 1000 characters and 200 characters in this implementation."
+    "query": "What web framework is FastAPI built on, and what is the class relationship between them?",
+    "relevant_chunk_ids": [
+      "c769203c3569a271abd26412c1bdb4ef89e56ec6d63f9a26745e252e1c29ca63"
+    ],
+    "reference_answer": "FastAPI is built on Starlette; the FastAPI class is a subclass of Starlette.",
+    "source_files": [
+      "fastapi_features.md"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
   },
   {
-    "query": "How does the implementation prevent duplicate vectors during re-ingestion?",
-    "relevant_chunk_ids": ["fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d"],
-    "reference_answer": "It uses deterministic SHA-256 document and chunk IDs, deletes existing rows with the same chunk IDs, and then inserts the updated rows."
+    "query": "Which library does FastAPI use for all of its data handling and validation?",
+    "relevant_chunk_ids": [
+      "7d2aa1e3740fd2c0306d0d5fbb1b0a9d140f04f1237647d21604d80130e22363"
+    ],
+    "reference_answer": "Pydantic.",
+    "source_files": [
+      "fastapi_features.md"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
   },
   {
-    "query": "Which metadata fields are stored with each chunk?",
-    "relevant_chunk_ids": ["fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d"],
-    "reference_answer": "The implementation stores vector, chunk text, document ID, source file, document type, chunk index, chunk size, and chunk overlap."
+    "query": "What test coverage and type-annotation level does the FastAPI codebase report?",
+    "relevant_chunk_ids": [
+      "c7aa671b793cccb69c0cddf7ec9b5a89627459e4ecc254c3662b05a0b5e5bf3c"
+    ],
+    "reference_answer": "A 100% test coverage and a 100% type-annotated codebase.",
+    "source_files": [
+      "fastapi_features.md"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "What endpoints does the FastAPI service expose?",
-    "relevant_chunk_ids": ["fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d", "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559"],
-    "reference_answer": "The service exposes /health, /ingest, and /query."
+    "query": "What is a vector database?",
+    "relevant_chunk_ids": [
+      "5b26b7c93ddbe6e956a201eedf877f7ba2df2d2e779934a0e643d028988c8518"
+    ],
+    "reference_answer": "A database that stores and retrieves embeddings in vector space and typically uses approximate nearest neighbor algorithms to find records that are semantically similar to a query.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
   },
   {
-    "query": "What should the system do when no relevant context is retrieved?",
-    "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c", "daab8d663e985d69481108657adad7addf0314160d0f30b266c3ddf2775c69fe"],
-    "reference_answer": "It should return a no-context response and avoid hallucinating."
+    "query": "What is the typical range of dimensionality for vector embeddings?",
+    "relevant_chunk_ids": [
+      "3e5632a3942399873c4b6d93ab610fc665e2315d9cf791e6a13db6ff9f46e0cf"
+    ],
+    "reference_answer": "From a few hundred to tens of thousands of dimensions, depending on the complexity of the data.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "Which retrieval metrics are required by the assignment?",
-    "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c"],
-    "reference_answer": "The required retrieval metrics are Recall@k or Hit Rate, MRR, nDCG@k, and context precision."
+    "query": "Name common techniques used for similarity search over high-dimensional vectors.",
+    "relevant_chunk_ids": [
+      "0247c3a6a8f8b77ea676132ced599fd0bb5df8371fcecd20cc1ee4706f3d27fe"
+    ],
+    "reference_answer": "Hierarchical Navigable Small World (HNSW) graphs, locality-sensitive hashing (LSH), product quantization (PQ), and inverted files.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
   },
   {
-    "query": "Which answer quality metrics are required for Problem 1?",
-    "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c", "e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02"],
-    "reference_answer": "The answer quality metrics are faithfulness or groundedness and answer relevance."
+    "query": "In a retrieval-augmented generation system, how is the retrieval component most often implemented?",
+    "relevant_chunk_ids": [
+      "28bc5c7529287a566af7c31c41ab88971a0f8c60a63e00c40bd82a814dd489e7"
+    ],
+    "reference_answer": "As a vector database.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "What deliverables are required for Problem 1?",
-    "relevant_chunk_ids": ["e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02"],
-    "reference_answer": "The deliverables are a runnable RAG service, evaluation harness and results file, cost-comparison table, and README discussion."
+    "query": "What is the running time of the naive linear-search approach to nearest neighbor search?",
+    "relevant_chunk_ids": [
+      "885b5c4bf728b40e20e43c199b49473f3bc6d828d7ba3bbdf5a5ecd67e393d02"
+    ],
+    "reference_answer": "O(dN), where N is the number of points and d is the dimensionality.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
   },
   {
-    "query": "How many points are assigned to cost analysis?",
-    "relevant_chunk_ids": ["e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02"],
-    "reference_answer": "Cost analysis is worth 20 points."
+    "query": "What are the two most well-known variants of the nearest neighbor search problem?",
+    "relevant_chunk_ids": [
+      "a667d04e75df1ab82164b7f8f4e64ef3439160b61904a6077a82a25b6707fc29"
+    ],
+    "reference_answer": "The k-nearest neighbor search and the epsilon-approximate nearest neighbor search.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "Why was LanceDB selected as the low-cost vector store?",
-    "relevant_chunk_ids": ["61f820b9733ee4adf8b53e6c208cd574c6ec4031482e38f64364090ac16ca677", "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559"],
-    "reference_answer": "LanceDB was selected because it runs embedded with the application and avoids an always-on managed vector database bill."
+    "query": "What is retrieval-augmented generation (RAG)?",
+    "relevant_chunk_ids": [
+      "d6d9b70666e0e932094c011775abf21aaab5ac00210065f905560bf11b7be45d"
+    ],
+    "reference_answer": "A technique that enables large language models to retrieve and incorporate new information from external data sources before responding to a query.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
   },
   {
-    "query": "What vector scales are compared in the cost model?",
-    "relevant_chunk_ids": ["61f820b9733ee4adf8b53e6c208cd574c6ec4031482e38f64364090ac16ca677"],
-    "reference_answer": "The cost model compares 100K, 1M, and 10M stored vectors."
+    "query": "In what year was the term retrieval-augmented generation introduced?",
+    "relevant_chunk_ids": [
+      "e984516e7e3aa06ac5263fabe2cbef70c7ac03dc951d06125dddeb723eeba997"
+    ],
+    "reference_answer": "2020, in a paper combining a parametric language model with non-parametric external memory.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "What assumptions are used for vector size and metadata overhead?",
-    "relevant_chunk_ids": ["61f820b9733ee4adf8b53e6c208cd574c6ec4031482e38f64364090ac16ca677"],
-    "reference_answer": "The assumptions are 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector."
+    "query": "Why do fixed-length chunking strategies overlap consecutive chunks?",
+    "relevant_chunk_ids": [
+      "168347122e4739a273abeb192f30109bfcdc1c7a18032d1d8b9d529dd1365ebf"
+    ],
+    "reference_answer": "Overlapping consecutive chunks helps maintain semantic context across the chunks.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
   },
   {
-    "query": "What telemetry is logged for each query?",
-    "relevant_chunk_ids": ["daab8d663e985d69481108657adad7addf0314160d0f30b266c3ddf2775c69fe", "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559"],
-    "reference_answer": "Each query logs latency, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped."
+    "query": "What is hybrid search and what problem does it address?",
+    "relevant_chunk_ids": [
+      "4eaf4dda6727044f109018559ff1340c697560d1ecae7c31b17e10b8ff73020f"
+    ],
+    "reference_answer": "Combining vector search with traditional text search, used because vector search can sometimes miss key facts needed to answer a question.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
+  },
+  {
+    "query": "Does retrieval-augmented generation eliminate hallucinations in large language models?",
+    "relevant_chunk_ids": [
+      "807f0ba58e94e9b500d6b9daa39731c679d2b89126ea4cbec8f081169cdb7f84"
+    ],
+    "reference_answer": "No. RAG improves accuracy but does not prevent hallucinations; the model can still hallucinate around the source material.",
+    "source_files": [
+      "vector_search_and_rag.html"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
+  },
+  {
+    "query": "Who defines and maintains the standard HTTP status codes?",
+    "relevant_chunk_ids": [
+      "2a8d0618f4a9e692f641501a3555ae6c536da8c157eb11cb8afa66afc2624e7b"
+    ],
+    "reference_answer": "They are defined by the IETF in RFC publications and maintained by the IANA.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
+  },
+  {
+    "query": "What does HTTP status code 200 OK mean?",
+    "relevant_chunk_ids": [
+      "63712883a38af31543a7f8e1b2036a26596003454f9a8d6dc058ac7015ff179b"
+    ],
+    "reference_answer": "It is the standard response for a successful HTTP request.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
+  },
+  {
+    "query": "What does HTTP status code 400 Bad Request indicate?",
+    "relevant_chunk_ids": [
+      "6d669b2c19089133d50e9e1323555e1c1c23fc8ea331c435513ec01275ab729f"
+    ],
+    "reference_answer": "The server cannot or will not process the request due to an apparent client error.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
+  },
+  {
+    "query": "What is HTTP status code 401 Unauthorized used for?",
+    "relevant_chunk_ids": [
+      "6d669b2c19089133d50e9e1323555e1c1c23fc8ea331c435513ec01275ab729f"
+    ],
+    "reference_answer": "It is used when authentication is required and has either failed or not yet been provided.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "medium",
+    "expected_refusal": false
+  },
+  {
+    "query": "Which novel is HTTP status code 451 a reference to?",
+    "relevant_chunk_ids": [
+      "d9bf755372d94da152e5e451208b5536c3b4793039724ddb32300b314674b000"
+    ],
+    "reference_answer": "Fahrenheit 451.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
+  },
+  {
+    "query": "What does HTTP status code 502 Bad Gateway mean?",
+    "relevant_chunk_ids": [
+      "c9768b821e9a129c51eb44a586557857de2599e753173b757ff325fdc9e2e24c"
+    ],
+    "reference_answer": "The server, acting as a gateway or proxy, received an invalid response from the upstream server.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "easy",
+    "expected_refusal": false
+  },
+  {
+    "query": "Which HTTP status code should a proxy return when it receives an invalid response from the upstream server?",
+    "relevant_chunk_ids": [
+      "c9768b821e9a129c51eb44a586557857de2599e753173b757ff325fdc9e2e24c"
+    ],
+    "reference_answer": "502 Bad Gateway.",
+    "source_files": [
+      "http_status_codes.pdf"
+    ],
+    "difficulty": "hard",
+    "expected_refusal": false
+  },
+  {
+    "query": "What is the capital of France?",
+    "relevant_chunk_ids": [],
+    "reference_answer": "I could not find relevant context in the indexed documents to answer this question.",
+    "source_files": [],
+    "difficulty": "easy",
+    "expected_refusal": true
+  },
+  {
+    "query": "What was Tesla's total revenue in fiscal year 2023?",
+    "relevant_chunk_ids": [],
+    "reference_answer": "I could not find relevant context in the indexed documents to answer this question.",
+    "source_files": [],
+    "difficulty": "easy",
+    "expected_refusal": true
+  },
+  {
+    "query": "How do I make a sourdough bread starter from scratch?",
+    "relevant_chunk_ids": [],
+    "reference_answer": "I could not find relevant context in the indexed documents to answer this question.",
+    "source_files": [],
+    "difficulty": "easy",
+    "expected_refusal": true
   }
 ]
