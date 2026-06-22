@@ -7,7 +7,7 @@ them together so there is a single ingestion code path.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any
 
 from .config import settings
 from .embedding import get_embedding
@@ -15,7 +15,7 @@ from .ingestion import process_documents
 from .storage import upsert_vectors
 
 
-def embed_chunks(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def embed_chunks(chunks: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for chunk in chunks:
         chunk["vector"] = get_embedding(chunk["text"], input_type="document")
         chunk["embedding_model"] = (
@@ -25,7 +25,7 @@ def embed_chunks(chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return chunks
 
 
-def run_ingest(data_dir: str | None = None) -> Dict[str, Any]:
+def run_ingest(data_dir: str | None = None) -> dict[str, Any]:
     """Parse, chunk, embed and upsert every supported document under ``data_dir``."""
     data_dir = data_dir or settings.data_root
     chunks = process_documents(data_dir)

@@ -1,0 +1,16 @@
+[tool.black]
+line-length = 110
+target-version = ["py312"]
+extend-exclude = "data/corpus|reports"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["data/corpus", "reports", "db", "cache", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "E501",   # line length is owned by black; long string literals are allowed
+    "UP047",  # PEP 695 generic-function syntax is not required here
+]

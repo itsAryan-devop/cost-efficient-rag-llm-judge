@@ -2,12 +2,14 @@ import hashlib
 from dataclasses import dataclass
 
 from groq import Groq
+
 from .config import settings
 from .embedding import cache
 from .gemini_client import call_with_gemini_key
 from .retry import retry_on_transient
 
 NO_CONTEXT_MESSAGE = "I could not find relevant context in the indexed documents to answer this question."
+
 
 @dataclass
 class GenerationResult:
@@ -17,15 +19,18 @@ class GenerationResult:
     model: str = ""
     skipped_llm: bool = False
 
+
 def _cache_key(prompt: str, provider: str, model: str) -> str:
     raw = f"generation:{provider}:{model}:{prompt}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
 
 def _usage_from_gemini(response) -> int:
     usage = getattr(response, "usage_metadata", None)
     if not usage:
         return 0
     return int(getattr(usage, "total_token_count", 0) or 0)
+
 
 def _gemini_generate(prompt: str) -> GenerationResult:
     response = call_with_gemini_key(
@@ -41,6 +46,7 @@ def _gemini_generate(prompt: str) -> GenerationResult:
         provider="gemini",
         model=settings.generation_model,
     )
+
 
 def _groq_generate(prompt: str) -> GenerationResult:
     if not settings.groq_api_key:
@@ -66,6 +72,7 @@ def _groq_generate(prompt: str) -> GenerationResult:
         model=settings.groq_model,
     )
 
+
 def has_relevant_context(retrieved_chunks: list[dict]) -> bool:
     if not retrieved_chunks:
         return False
@@ -77,6 +84,7 @@ def has_relevant_context(retrieved_chunks: list[dict]) -> bool:
     if distance is None:
         return True
     return float(distance) <= settings.max_retrieval_distance
+
 
 def build_prompt(query: str, retrieved_chunks: list[dict]) -> str:
     context_text = ""
@@ -100,9 +108,8 @@ Question:
 
 Answer:"""
 
-def generate_answer(
-    query: str, retrieved_chunks: list[dict], use_cache: bool = True
-) -> GenerationResult:
+
+def generate_answer(query: str, retrieved_chunks: list[dict], use_cache: bool = True) -> GenerationResult:
     """
     Generates a grounded answer given the query and retrieved context chunks.
     Handles 'no relevant context' appropriately.

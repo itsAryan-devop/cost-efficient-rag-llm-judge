@@ -8,10 +8,8 @@ cheap and deterministic.
 
 from __future__ import annotations
 
-import re
 import string
 from collections import Counter
-from typing import List
 
 _ARTICLES = {"a", "an", "the"}
 _PUNCT_TABLE = str.maketrans("", "", string.punctuation)
@@ -25,7 +23,7 @@ def normalize_answer(text: str) -> str:
     return " ".join(tokens)
 
 
-def _tokens(text: str) -> List[str]:
+def _tokens(text: str) -> list[str]:
     return normalize_answer(text).split()
 
 

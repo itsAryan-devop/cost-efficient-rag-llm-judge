@@ -1,10 +1,10 @@
 import hashlib
 import math
 import re
-from typing import List
 
-from google.genai import types
 from diskcache import Cache
+from google.genai import types
+
 from .config import settings
 from .gemini_client import call_with_gemini_key
 
@@ -12,11 +12,13 @@ cache = Cache(settings.cache_path)
 
 TOKEN_RE = re.compile(r"[A-Za-z0-9_]+")
 
+
 def _cache_key(provider: str, model: str, text: str, input_type: str) -> str:
     raw = f"embedding:{provider}:{model}:{settings.embedding_dimension}:{input_type}:{text}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
-def _mock_embedding(text: str) -> List[float]:
+
+def _mock_embedding(text: str) -> list[float]:
     """Cheap deterministic embedding for tests and dry runs."""
     vector = [0.0] * settings.embedding_dimension
     tokens = TOKEN_RE.findall(text.lower())
@@ -32,6 +34,7 @@ def _mock_embedding(text: str) -> List[float]:
     norm = math.sqrt(sum(v * v for v in vector)) or 1.0
     return [v / norm for v in vector]
 
+
 def _format_for_gemini_embedding(text: str, input_type: str) -> str:
     if settings.embedding_model == "gemini-embedding-2":
         if input_type == "query":
@@ -39,7 +42,8 @@ def _format_for_gemini_embedding(text: str, input_type: str) -> str:
         return f"title: none | text: {text}"
     return text
 
-def _gemini_embedding(text: str, input_type: str) -> List[float]:
+
+def _gemini_embedding(text: str, input_type: str) -> list[float]:
     if not settings.gemini_api_key:
         # GEMINI_API_KEYS may still be present; the rotation helper validates.
         pass
@@ -58,7 +62,8 @@ def _gemini_embedding(text: str, input_type: str) -> List[float]:
     embedding = response.embeddings[0].values
     return [float(v) for v in embedding]
 
-def get_embedding(text: str, input_type: str = "document", use_cache: bool = True) -> List[float]:
+
+def get_embedding(text: str, input_type: str = "document", use_cache: bool = True) -> list[float]:
     """
     Gets the embedding for a piece of text.
     Checks the local disk cache first to save API calls.
@@ -72,7 +77,7 @@ def get_embedding(text: str, input_type: str = "document", use_cache: bool = Tru
 
     if use_cache and key in cache:
         return cache[key]
-    
+
     if provider == "mock":
         embedding = _mock_embedding(text)
     elif provider == "gemini":
