@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     embedding_dimension: int = 768
     generation_model: str = "gemini-2.5-flash"
     groq_model: str = "llama-3.3-70b-versatile"
+    judge_model: str = ""
+    gemini_max_retries: int = 2
     chunk_size: int = 1000
     chunk_overlap: int = 200
     top_k: int = 5

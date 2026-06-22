@@ -21,18 +21,18 @@ Evidence:
 
 Latest aggregate retrieval metrics:
 
-- Recall@5: 0.967
+- Recall@5: 1.000
 - Hit Rate: 1.000
-- MRR: 0.913
-- nDCG@5: 0.916
-- Context Precision: 0.293
+- MRR: 0.967
+- nDCG@5: 0.959
+- Context Precision: 0.307
 
 ## Answer Evaluation - 20 pts
 
 Evidence:
 
-- `eval/llm_judge.py` scores faithfulness/groundedness and answer relevance.
-- `reports/evaluation_results.json` includes faithfulness and relevance per case.
+- `eval/llm_judge.py` scores faithfulness/groundedness and answer relevance with a combined rationale-first JSON judge call.
+- `reports/evaluation_results.json` includes faithfulness, relevance, rationale, raw judge response, judge provider, and judge model per case.
 
 Latest aggregate answer metrics:
 
@@ -56,6 +56,7 @@ Evidence:
 - Gemini key rotation in `src/gemini_client.py`.
 - Structured JSON telemetry in `src/logger.py`.
 - Cache-backed embeddings/generation/judging to reduce API usage.
+- Separate `JUDGE_MODEL` config so evaluation can use a cheaper model than generation when quotas are tight.
 - No-context fallback using `MAX_RETRIEVAL_DISTANCE`.
 - `README.md` includes setup, API usage, evaluation workflow, cost analysis, and discussion.
-- `tests/` currently passes with 22 tests.
+- `tests/` currently passes with 31 tests.

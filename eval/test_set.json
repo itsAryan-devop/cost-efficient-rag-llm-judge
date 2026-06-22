@@ -40,7 +40,7 @@
     "reference_answer": "The required retrieval metrics are Recall@k or Hit Rate, MRR, nDCG@k, and context precision."
   },
   {
-    "query": "Which answer quality metrics are required?",
+    "query": "Which answer quality metrics are required for Problem 1?",
     "relevant_chunk_ids": ["d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c", "e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02"],
     "reference_answer": "The answer quality metrics are faithfulness or groundedness and answer relevance."
   },

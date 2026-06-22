@@ -1,4 +1,5 @@
 import re
+import time
 from collections.abc import Callable
 from typing import TypeVar
 
@@ -10,7 +11,8 @@ from .logger import log_event
 
 
 T = TypeVar("T")
-ROTATABLE_STATUS_CODES = {403, 429, 500, 502, 503, 504}
+ROTATABLE_STATUS_CODES = {401, 403, 429, 500, 502, 503, 504}
+RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
 def get_gemini_api_keys() -> list[str]:
@@ -37,6 +39,17 @@ def get_gemini_api_keys() -> list[str]:
     return unique_keys
 
 
+def _status_code(exc: Exception) -> int:
+    """Extracts a provider status code across google-genai SDK versions."""
+    for attr in ("status_code", "status", "code"):
+        value = getattr(exc, attr, None)
+        if isinstance(value, int):
+            return value
+
+    match = re.search(r"\b(4\d\d|5\d\d)\b", str(exc))
+    return int(match.group(1)) if match else 0
+
+
 def call_with_gemini_key(purpose: str, operation: Callable[[genai.Client], T]) -> T:
     """
     Runs a Gemini operation with key rotation.
@@ -49,24 +62,36 @@ def call_with_gemini_key(purpose: str, operation: Callable[[genai.Client], T]) -
         raise RuntimeError("Set GEMINI_API_KEY or GEMINI_API_KEYS for Gemini calls.")
 
     last_error: Exception | None = None
+    max_retries = max(1, settings.gemini_max_retries)
     for key_index, api_key in enumerate(keys):
         client = genai.Client(api_key=api_key)
-        try:
-            return operation(client)
-        except (ClientError, ServerError) as exc:
-            status_code = int(getattr(exc, "status_code", 0) or 0)
-            last_error = exc
-            should_rotate = status_code in ROTATABLE_STATUS_CODES and key_index < len(keys) - 1
-            log_event(
-                "gemini_call_failed",
-                purpose=purpose,
-                key_index=key_index,
-                status_code=status_code,
-                rotated=should_rotate,
-            )
-            if should_rotate:
-                continue
-            raise
+        for attempt in range(max_retries):
+            try:
+                return operation(client)
+            except (ClientError, ServerError) as exc:
+                status_code = _status_code(exc)
+                last_error = exc
+                retryable = status_code in RETRYABLE_STATUS_CODES and attempt < max_retries - 1
+                should_rotate = (
+                    status_code in ROTATABLE_STATUS_CODES
+                    and not retryable
+                    and key_index < len(keys) - 1
+                )
+                log_event(
+                    "gemini_call_failed",
+                    purpose=purpose,
+                    key_index=key_index,
+                    status_code=status_code,
+                    attempt=attempt + 1,
+                    max_retries=max_retries,
+                    rotated=should_rotate,
+                )
+                if retryable:
+                    time.sleep(min(2**attempt, 4))
+                    continue
+                if should_rotate:
+                    break
+                raise
 
     if last_error:
         raise last_error

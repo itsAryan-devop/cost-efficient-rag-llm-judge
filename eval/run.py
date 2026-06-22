@@ -1,10 +1,11 @@
 import json
 import os
+import re
 from datetime import datetime, timezone
 from src.api import query_rag, QueryRequest
 from src.config import settings
 from eval.ir_metrics import recall_at_k, hit_rate, mrr, context_precision, ndcg_at_k
-from eval.llm_judge import evaluate_faithfulness, evaluate_relevance
+from eval.llm_judge import evaluate_answer_detail
 
 def _mean(rows, field):
     return sum(r[field] for r in rows) / len(rows) if rows else 0.0
@@ -15,6 +16,14 @@ def _percentile(values, percentile):
     ordered = sorted(values)
     index = min(len(ordered) - 1, round((percentile / 100) * (len(ordered) - 1)))
     return ordered[index]
+
+def _judge_context(answer: str, sources: list[dict]) -> str:
+    cited_ids = set(re.findall(r"\b[a-f0-9]{64}\b", answer))
+    selected_sources = [s for s in sources if s["id"] in cited_ids] or sources
+    return "\n\n".join(
+        f'<chunk id="{s["id"]}" source="{s.get("source_file", "")}">\n{s["text"]}\n</chunk>'
+        for s in selected_sources
+    )
 
 def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None = None):
     with open(test_set_path, "r", encoding="utf-8") as f:
@@ -34,7 +43,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
         response = query_rag(QueryRequest(query=query, top_k=5))
         retrieved_ids = [s["id"] for s in response["sources"]]
         answer = response["answer"]
-        context_str = "\n".join([s["text"] for s in response["sources"]])
+        context_str = _judge_context(answer, response["sources"])
         
         # 2. Compute IR Metrics
         recall = recall_at_k(retrieved_ids, relevant_ids, k=5)
@@ -44,8 +53,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
         ndcg = ndcg_at_k(retrieved_ids, relevant_ids, k=5)
         
         # 3. Compute LLM Answer Metrics
-        faith = evaluate_faithfulness(context_str, answer)
-        rel = evaluate_relevance(query, answer)
+        judge = evaluate_answer_detail(query, context_str, answer)
         
         results.append({
             "query": query,
@@ -58,8 +66,14 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
             "mrr": r_mrr,
             "context_precision": cp,
             "ndcg@5": ndcg,
-            "faithfulness": faith,
-            "relevance": rel,
+            "faithfulness": judge.faithfulness_score,
+            "faithfulness_rationale": judge.faithfulness_rationale,
+            "faithfulness_raw_response": judge.raw_response,
+            "relevance": judge.relevance_score,
+            "relevance_rationale": judge.relevance_rationale,
+            "relevance_raw_response": judge.raw_response,
+            "judge_provider": judge.provider,
+            "judge_model": judge.model,
             "latency_ms": response.get("latency_ms", 0),
             "embedding_latency_ms": response.get("embedding_latency_ms", 0),
             "retrieval_latency_ms": response.get("retrieval_latency_ms", 0),
@@ -92,6 +106,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
             "embedding_dimension": settings.embedding_dimension,
             "generation_provider": settings.generation_provider,
             "judge_provider": settings.judge_provider,
+            "judge_model": settings.judge_model or None,
         },
     }
 

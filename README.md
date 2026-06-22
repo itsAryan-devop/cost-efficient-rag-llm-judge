@@ -27,7 +27,7 @@ src/
   logger.py          Structured JSON telemetry
 eval/
   ir_metrics.py      Recall@k, hit rate, MRR, nDCG@k, context precision
-  llm_judge.py       Faithfulness and relevance judge
+  llm_judge.py       Faithfulness and relevance judge with rationales
   run.py             Evaluation runner
   export_chunks.py   Chunk inventory for labeling evaluation questions
   cost_analysis.py   Reproducible cost comparison
@@ -61,13 +61,14 @@ Recommended free/low-cost config:
 DATA_ROOT=data
 EMBEDDING_PROVIDER=gemini
 GENERATION_PROVIDER=groq
-JUDGE_PROVIDER=groq
+JUDGE_PROVIDER=gemini
 EMBEDDING_MODEL=gemini-embedding-2
 GENERATION_MODEL=gemini-2.5-flash
 GROQ_MODEL=llama-3.3-70b-versatile
+JUDGE_MODEL=gemini-2.5-flash
 ```
 
-Gemini is used for embeddings. Groq is used for answer generation and judging in the current run because the Gemini free-tier generation quota was exhausted during evaluation. The providers are independently configurable.
+Gemini is used for embeddings and answer judging in the current run. Groq is used for answer generation because it is a practical free-tier backup when Gemini generation quota is tight. The embedding, generation, and judging providers are independently configurable, and `JUDGE_MODEL` can be set to a smaller model when evaluation quotas are tight.
 
 For free local smoke tests without API calls:
 
@@ -140,25 +141,25 @@ Latest evaluation summary:
 | Metric | Value |
 |---|---:|
 | Cases | 15 |
-| Recall@5 | 0.967 |
+| Recall@5 | 1.000 |
 | Hit Rate | 1.000 |
-| MRR | 0.913 |
-| nDCG@5 | 0.916 |
-| Context Precision | 0.293 |
+| MRR | 0.967 |
+| nDCG@5 | 0.959 |
+| Context Precision | 0.307 |
 | Faithfulness | 1.000 |
 | Answer Relevance | 1.000 |
-| p50 Total Latency (warm-cache rerun) | 16 ms |
-| p95 Total Latency (warm-cache rerun) | 18 ms |
-| p50 Retrieval Latency | 16 ms |
-| p95 Retrieval Latency | 18 ms |
-| Total Generation Tokens | 21141 |
+| p50 Total Latency (warm-cache rerun) | 15 ms |
+| p95 Total Latency (warm-cache rerun) | 16 ms |
+| p50 Retrieval Latency | 14 ms |
+| p95 Retrieval Latency | 15 ms |
+| Total Generation Tokens | 21146 |
 
 The latest run records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion. Total latency in this table is a warm-cache rerun, while token usage is retained from cached generation results.
 
 Metrics included:
 
 - Retrieval: Recall@5, hit rate, MRR, nDCG@5, context precision
-- Answer quality: faithfulness/groundedness and answer relevance
+- Answer quality: faithfulness/groundedness and answer relevance, evaluated in one cost-efficient judge call with rationales and raw judge response
 - Operations: latency and token usage
 
 ## Cost Analysis
@@ -231,7 +232,7 @@ Retrieval evaluation:
 Answer evaluation:
 
 - `eval/llm_judge.py`
-- faithfulness and relevance fields in `reports/evaluation_results.json`
+- faithfulness, relevance, judge rationale, and raw judge response fields in `reports/evaluation_results.json`
 
 Cost analysis:
 
@@ -252,7 +253,7 @@ Engineering and clarity:
 
 Retrieval was the stronger layer in the current run. The system found at least one relevant chunk for every evaluation question, with high MRR and nDCG. Context precision is lower because `top_k=5` returns several neighboring chunks from a small corpus. In a larger production corpus, this would be tuned by lowering `top_k`, adding a distance threshold, reranking, or tightening chunk sizes.
 
-Generation was reliable in this small evaluation because the prompt required citations and the judge found the answers faithful and relevant. The main operational weakness was provider quota: Gemini free-tier generation hit its request limit, so the run switched to Groq for generation and judging. This is why the project keeps embedding, generation, and judging providers independently configurable.
+Generation was reliable in this small evaluation because the prompt required citations and the Gemini judge found the answers faithful and relevant. The main operational weakness was provider quota: free-tier generation and judging can hit request limits during repeated evaluation. This is why the project keeps embedding, generation, and judging providers independently configurable, uses disk caching, rotates Gemini keys, and judges faithfulness/relevance in one combined call.
 
 I would switch back to a managed vector database when the workload needs many concurrent writers, multi-region availability, automatic backups, strict uptime guarantees, or team operations around monitoring and scaling. For a lightly queried, cost-sensitive RAG index, embedded LanceDB is a credible lower-cost choice.
 
@@ -268,5 +269,5 @@ The accepted trade-off is operational ownership. LanceDB reduces infrastructure 
 Current test status:
 
 ```text
-22 passed
+31 passed
 ```
