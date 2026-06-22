@@ -99,6 +99,8 @@ Useful endpoints:
 
 No-context handling is controlled by `MIN_RELEVANCE_SCORE`. LanceDB distance is lower-is-better, and the default `0.90` skips the LLM when the nearest chunk is too far away. This prevents unsupported answers and saves tokens.
 
+The API validates empty queries, invalid `top_k` values, and unsupported metadata filters so bad requests return clear client errors.
+
 ## Evaluation Workflow
 
 The included corpus in `data/` intentionally covers all required ingestion formats:
@@ -261,5 +263,5 @@ The accepted trade-off is operational ownership. LanceDB reduces infrastructure 
 Current test status:
 
 ```text
-8 passed
+15 passed
 ```

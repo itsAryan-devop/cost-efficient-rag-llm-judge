@@ -58,4 +58,4 @@ Evidence:
 - Cache-backed embeddings/generation/judging to reduce API usage.
 - No-context fallback using `MIN_RELEVANCE_SCORE`.
 - `README.md` includes setup, API usage, evaluation workflow, cost analysis, and discussion.
-- `tests/` currently passes with 11 tests.
+- `tests/` currently passes with 15 tests.

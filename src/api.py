@@ -1,6 +1,6 @@
 import time
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from typing import Optional
 from .config import settings
 from .ingestion import process_documents
@@ -12,8 +12,8 @@ from .logger import log_query
 app = FastAPI(title="Cost-Efficient RAG Application")
 
 class QueryRequest(BaseModel):
-    query: str
-    top_k: int = settings.top_k
+    query: str = Field(..., min_length=1)
+    top_k: int = Field(default=settings.top_k, ge=1, le=50)
     metadata_filter: Optional[dict[str, str]] = None
 
 class IngestRequest(BaseModel):
@@ -26,37 +26,46 @@ def health_check():
 @app.post("/ingest")
 def ingest_documents(req: IngestRequest):
     """Idempotent document ingestion."""
-    chunks = process_documents(req.data_dir)
+    try:
+        chunks = process_documents(req.data_dir)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     if not chunks:
         return {"status": "success", "message": "No documents found or processed.", "chunks_processed": 0}
         
-    # Embed chunks
-    for chunk in chunks:
-        chunk["vector"] = get_embedding(chunk["text"], input_type="document")
-        
-    # Store
-    upsert_vectors(chunks)
+    try:
+        for chunk in chunks:
+            chunk["vector"] = get_embedding(chunk["text"], input_type="document")
+        upsert_vectors(chunks)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Ingestion failed: {exc}") from exc
     
     return {"status": "success", "chunks_processed": len(chunks)}
 
 @app.post("/query")
 def query_rag(req: QueryRequest):
     start_time = time.time()
-    
-    # 1. Embed query
-    embedding_start = time.time()
-    query_vector = get_embedding(req.query, input_type="query")
-    embedding_latency_ms = (time.time() - embedding_start) * 1000
-    
-    # 2. Retrieve
-    retrieval_start = time.time()
-    results = search(query_vector, top_k=req.top_k, metadata_filter=req.metadata_filter)
-    retrieval_latency_ms = (time.time() - retrieval_start) * 1000
-    
-    # 3. Generate
-    generation_start = time.time()
-    generation = generate_answer(req.query, results)
-    generation_latency_ms = (time.time() - generation_start) * 1000
+
+    try:
+        # 1. Embed query
+        embedding_start = time.time()
+        query_vector = get_embedding(req.query, input_type="query")
+        embedding_latency_ms = (time.time() - embedding_start) * 1000
+
+        # 2. Retrieve
+        retrieval_start = time.time()
+        results = search(query_vector, top_k=req.top_k, metadata_filter=req.metadata_filter)
+        retrieval_latency_ms = (time.time() - retrieval_start) * 1000
+
+        # 3. Generate
+        generation_start = time.time()
+        generation = generate_answer(req.query, results)
+        generation_latency_ms = (time.time() - generation_start) * 1000
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Query failed: {exc}") from exc
     
     latency = (time.time() - start_time) * 1000
     
