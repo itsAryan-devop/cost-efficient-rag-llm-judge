@@ -1,38 +1,65 @@
 {
-  "created_at": "2026-06-22T19:41:01.274008Z",
+  "created_at": "2026-06-22T21:40:11.178040Z",
+  "report_date": "2026-06-23",
+  "managed_baseline": {
+    "provider": "Pinecone serverless (Standard plan)",
+    "source": "https://www.pinecone.io/pricing/",
+    "pricing_date": "2026-06-23",
+    "storage_cost_per_gb_month": 0.33,
+    "plan_minimum_month": 50.0,
+    "read_cost_per_million_ru": 8.25,
+    "write_cost_per_million_wu": 2.0,
+    "note": "Read/write unit costs scale with query volume and are additional to the totals above; for a lightly-queried index they are covered by the plan minimum."
+  },
   "assumptions": {
     "vector_dimension": 768,
     "bytes_per_float": 4,
     "metadata_overhead_bytes_per_vector": 700,
-    "storage_cost_per_gb_month": 0.08,
-    "existing_app_server_cost_month": 10.0,
-    "managed_base_cost_month": 70.0,
-    "managed_cost_per_extra_million_vectors": 10.0,
+    "lancedb_storage_cost_per_gb_month": 0.08,
+    "lancedb_host_cost_month": 10.0,
+    "managed_storage_cost_per_gb_month": 0.33,
+    "managed_plan_minimum_month": 50.0,
+    "managed_read_cost_per_million_ru": 8.25,
+    "managed_write_cost_per_million_wu": 2.0,
     "embedding_cost_per_million_input_tokens": 0.15,
-    "avg_tokens_per_chunk": 180
+    "chunk_size_chars": 1000,
+    "chunk_overlap_chars": 200,
+    "chars_per_token": 4.4,
+    "avg_tokens_per_chunk_derived": 181.8,
+    "chunk_size_unit": "characters (RecursiveCharacterTextSplitter)"
   },
   "rows": [
     {
       "vectors": 100000,
       "estimated_index_gb": 0.351,
       "lancedb_storage_cost_month": 0.03,
-      "managed_vector_db_cost_month": 70.0,
-      "one_time_embedding_cost": 2.7
+      "lancedb_host_cost_month": 10.0,
+      "lancedb_total_cost_month": 10.03,
+      "managed_storage_cost_month": 0.12,
+      "managed_total_cost_month": 50.0,
+      "one_time_embedding_cost": 2.73
     },
     {
       "vectors": 1000000,
       "estimated_index_gb": 3.513,
       "lancedb_storage_cost_month": 0.28,
-      "managed_vector_db_cost_month": 70.0,
-      "one_time_embedding_cost": 27.0
+      "lancedb_host_cost_month": 10.0,
+      "lancedb_total_cost_month": 10.28,
+      "managed_storage_cost_month": 1.16,
+      "managed_total_cost_month": 50.0,
+      "one_time_embedding_cost": 27.27
     },
     {
       "vectors": 10000000,
       "estimated_index_gb": 35.129,
       "lancedb_storage_cost_month": 2.81,
-      "managed_vector_db_cost_month": 160.0,
-      "one_time_embedding_cost": 270.0
+      "lancedb_host_cost_month": 10.0,
+      "lancedb_total_cost_month": 12.81,
+      "managed_storage_cost_month": 11.59,
+      "managed_total_cost_month": 50.0,
+      "one_time_embedding_cost": 272.73
     }
   ],
-  "markdown_table": "| Vectors | Est. Index Size (GB) | LanceDB Storage ($/mo) | Managed DB Est. ($/mo) | One-time Embedding Cost ($) |\n|---:|---:|---:|---:|---:|\n| 100,000 | 0.351 | 0.03 | 70.0 | 2.7 |\n| 1,000,000 | 3.513 | 0.28 | 70.0 | 27.0 |\n| 10,000,000 | 35.129 | 2.81 | 160.0 | 270.0 |"
+  "break_even": "At all three scales, embedded LanceDB (~$10/mo host + cents of storage) is roughly 5x cheaper than Pinecone serverless (Standard plan) (>=$50/mo plan minimum + $0.33/GB storage + read/write units). Managed wins once you need multi-region HA, managed backups/SLAs, or such high query concurrency that the always-on host you must run for LanceDB would itself have to be larger than the $50/mo managed plan -- i.e. the cost break-even is the point where your required compute exceeds the managed minimum, after which serverless autoscaling can be cheaper than an over-provisioned host.",
+  "markdown_table": "| Vectors | Index Size (GB) | LanceDB storage ($/mo) | LanceDB host ($/mo) | **LanceDB total ($/mo)** | **Managed total ($/mo)** | One-time embedding ($) |\n|---:|---:|---:|---:|---:|---:|---:|\n| 100,000 | 0.351 | 0.03 | 10.0 | **10.03** | **50.0** | 2.73 |\n| 1,000,000 | 3.513 | 0.28 | 10.0 | **10.28** | **50.0** | 27.27 |\n| 10,000,000 | 35.129 | 2.81 | 10.0 | **12.81** | **50.0** | 272.73 |"
 }
