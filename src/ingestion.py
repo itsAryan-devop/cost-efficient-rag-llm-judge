@@ -1,5 +1,6 @@
 import os
 import hashlib
+import re
 from typing import List, Dict, Any
 import pdfplumber
 from bs4 import BeautifulSoup
@@ -7,18 +8,35 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from .config import settings
 
 SUPPORTED_EXTENSIONS = {".pdf", ".html", ".htm", ".md", ".txt"}
+MOJIBAKE_REPLACEMENTS = {
+    "\u00e2\u0080\u0094": " - ",
+    "\u00e2\u0080\u0093": " - ",
+    "\u00e2\u0080\u00a2": "- ",
+    "\u00e2\u0086\u0092": "->",
+    "\u00c2\u00b7": "-",
+    "\u00e2\u0080\u0098": "'",
+    "\u00e2\u0080\u0099": "'",
+    "\u00e2\u0080\u009c": '"',
+    "\u00e2\u0080\u009d": '"',
+}
 
 def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 def normalize_text(text: str) -> str:
     """Normalizes whitespace while preserving readable paragraph boundaries."""
-    lines = [line.strip() for line in text.replace("\r\n", "\n").split("\n")]
+    for bad, replacement in MOJIBAKE_REPLACEMENTS.items():
+        text = text.replace(bad, replacement)
+    text = "".join(ch for ch in text if not (0x80 <= ord(ch) <= 0x9F))
+    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.replace("\r\n", "\n").split("\n")]
     compact = "\n".join(line for line in lines if line)
     return compact.strip()
 
-def compute_document_id(relative_path: str, text: str) -> str:
-    return sha256_text(f"doc:v1:{relative_path}:{text}")
+def compute_document_id(relative_path: str) -> str:
+    return sha256_text(f"doc:v1:{relative_path}")
+
+def compute_document_hash(text: str) -> str:
+    return sha256_text(f"content:v1:{text}")
 
 def compute_chunk_id(document_id: str, chunk_index: int, chunk_text: str) -> str:
     """Stable ID used to make re-ingestion idempotent."""
@@ -86,7 +104,8 @@ def process_documents(data_dir: str) -> List[Dict[str, Any]]:
                 if not text.strip():
                     continue
 
-                document_id = compute_document_id(relative_path, text)
+                document_id = compute_document_id(relative_path)
+                document_hash = compute_document_hash(text)
                 
                 chunks = splitter.split_text(text)
                 for i, chunk in enumerate(chunks):
@@ -94,6 +113,7 @@ def process_documents(data_dir: str) -> List[Dict[str, Any]]:
                     chunks_data.append({
                         "id": chunk_id,
                         "document_id": document_id,
+                        "document_hash": document_hash,
                         "text": chunk,
                         "metadata": {
                             "source_file": relative_path,

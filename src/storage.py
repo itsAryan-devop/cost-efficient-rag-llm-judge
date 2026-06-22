@@ -10,6 +10,7 @@ def schema() -> pa.Schema:
     return pa.schema([
         pa.field("id", pa.string()),
         pa.field("document_id", pa.string()),
+        pa.field("document_hash", pa.string()),
         pa.field("vector", pa.list_(pa.float32(), settings.embedding_dimension)),
         pa.field("text", pa.string()),
         pa.field("source_file", pa.string()),
@@ -31,6 +32,7 @@ def flatten_chunk(row: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "id": row["id"],
         "document_id": row["document_id"],
+        "document_hash": row["document_hash"],
         "vector": [float(v) for v in row["vector"]],
         "text": row["text"],
         "source_file": metadata.get("source_file", ""),
@@ -54,11 +56,16 @@ def upsert_vectors(data: List[Dict[str, Any]]):
     table = get_table()
     rows = [flatten_chunk(row) for row in data]
     
-    # Simple idempotent approach: delete existing chunks by ID, then add new ones
-    ids_to_upsert = [row["id"] for row in rows]
-    
-    # We delete in batches to avoid overly long SQL strings
+    # Delete by stable document_id first so changed documents do not leave stale chunks.
+    document_ids = sorted({row["document_id"] for row in rows})
     batch_size = 100
+    for i in range(0, len(document_ids), batch_size):
+        batch_ids = document_ids[i:i+batch_size]
+        ids_str = ", ".join(f"'{x}'" for x in batch_ids)
+        table.delete(f"document_id IN ({ids_str})")
+    
+    # Delete by chunk ID as a second guard for older rows created by previous schemas.
+    ids_to_upsert = [row["id"] for row in rows]
     for i in range(0, len(ids_to_upsert), batch_size):
         batch_ids = ids_to_upsert[i:i+batch_size]
         ids_str = ", ".join(f"'{x}'" for x in batch_ids)
@@ -83,12 +90,12 @@ def search(query_vector: List[float], top_k: int = 5, metadata_filter: Mapping[s
     """
     Searches LanceDB for the most similar vectors.
     """
+    where_clause = build_where(metadata_filter)
     table = get_table()
     if table.count_rows() == 0:
         return []
         
     query = table.search(query_vector).limit(top_k)
-    where_clause = build_where(metadata_filter)
     if where_clause:
         query = query.where(where_clause)
         

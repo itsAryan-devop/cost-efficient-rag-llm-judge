@@ -1,90 +1,90 @@
 {
-  "created_at": "2026-06-22T17:20:10.338703Z",
+  "created_at": "2026-06-22T18:12:11.119601Z",
   "chunk_count": 11,
   "chunks": [
     {
-      "id": "63dbe7be608e6c0c1db7047dd1133ea69148f6986c61840a6fe6a3bd4a80a2c7",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "40e52cfd0ee65a80b1f85511ca14f3c12950c69eca39ec99b3e9c18278cfe120",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 0,
       "text_preview": "[page 1]\nApplied AI / ML Engineering — Take-Home Assignment\nProblem 1 — Cost-Efficient RAG Application\nBackground. On a fully managed vector DB, the bill scales with stored vectors (always-on pods), so a large but lightly-queried index\nbecomes a top infra cost. Build a working RAG app on a low-cost store and prove, with numbers, that it is a credible alternative.\nObjective. A QA service over a document corpus, backed by a low-cost vector store, with honest evaluation of retrieval quality,\nanswer"
     },
     {
-      "id": "fe8a4fdf463227ff88f93484f7655cd391e59f48bd799b54c48af4393f8187a0",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "d945cdcceda0d1296b3306825995bbf818054e261b80145b884dc2a50f4fea1c",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 1,
       "text_preview": "2. Embed chunks (record model + dimensionality); store vectors + metadata with at least one metadata filter.\n3. Top-k retrieval (k is a parameter) → grounded LLM answer that cites the chunks it used; handle 'no relevant context' without\nhallucinating.\n4. Expose as an HTTP endpoint (preferred) or CLI; config via env, no hardcoded secrets; log per-query latency, chunk count, token\nusage.\nEvaluation (the core — use a fixed set of 15–30 questions)\n• Retrieval: Recall@k / Hit Rate, MRR, nDCG@k, conte"
     },
     {
-      "id": "aa602d00c49153c7f9fa180f8236c69a601a4fcd1412c535030697741debbcee",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "e540a918dbf3d36fc9bf1ec413a77c6fd7908d5adfa53b00b918ec3717657c02",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 2,
       "text_preview": "the trade-offs you accept.\nDeliverables\n• Runnable RAG service · evaluation harness + results file (all three layers) · cost-comparison table · README with a short\nDiscussion (when would you switch back to managed; was retrieval or generation the weak link).\nScoring (100 pts)\nArea Pts What we look for\nCorrectness & ingestion 20 End-to-end works; idempotent; sensible chunking.\nRetrieval evaluation 20 Real IR metrics, computed correctly.\nAnswer evaluation 20 Faithfulness/relevance measured, not as"
     },
     {
-      "id": "5a1687ed83031bbbcca762b8c6aa156d05985455051357011d440702835fa419",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "e27368c4ada61f607ab0d6acf2966be9a9a9ca9493a4e7947341f36ae48e8fdc",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 3,
       "text_preview": "themselves biased and noisy — they can prefer the longer answer, the one seen first, or their own model family. Build a judging\npipeline and take its biases seriously.\nObjective. Given a test case { input, system_prompt, model_output, expected_output?, criteria? }, use an LLM judge to produce a\nstructured quality verdict, with concrete measures to detect and reduce judge bias.\nJudging mode. Implement at least one, explain when each fits: pointwise scoring · pairwise A-vs-B · reference-based · re"
     },
     {
-      "id": "8845c16897b2737516385a1d80176c1cb9772dfbfecad05c0521902a257350e1",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "65baf4139fad56d15c5913f4525917bc35a11c82ce5257193cf8f7a7aea40451",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 4,
       "text_preview": "3. Aggregate per-case → suite report (pass rate, mean scores, win rate); support comparing TWO configs (prompt v1 vs v2, or\nmodel A vs B) and declaring a winner.\n4. Log every judge prompt + raw response (auditable/replayable); track judge tokens/calls; judge and generator configurable\nindependently.\nBias handling (the heart of this problem) — name it, mitigate it in code, measure it\nBias Mitigation you must implement / discuss\nPosition (A/B order) Run each pair in BOTH orders; average or require"
     },
     {
-      "id": "0d5b71119e303a030a00b4a7abd6270e99fc1f29cd9e04e953109621081d9b13",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "78c9a33a184dcfb9e596fe56ef2e19863f2e9e3e1f7253710d666cd1b2a316ed",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 5,
       "text_preview": "Score clustering Calibrate the scale with few-shot anchors, or switch to pairwise.\nValidate the judge (at least one)\n• Agreement with human/gold labels (agreement rate, Cohen's kappa, or correlation) · test-retest consistency (how often the\nverdict flips on re-run) · adversarial probe set (verbose-but-wrong, terse-but-correct) and whether it was fooled.\nDeliverables\n• Runnable pipeline (suite in → report out) · one judging mode + documented rubric · position-bias check with results · a judge-\nva"
     },
     {
-      "id": "a391cc950475bfbdf1340a43a7acdb06009e8d44bf2a15135cfad43cf458e486",
-      "document_id": "fd00bcf0b550695685356d2444357defe80429f37409cf98939a6b254c437c18",
+      "id": "07e4260e7b487b52fb61cb7a70975e273671578d2f55ea48cc18f069632d79e1",
+      "document_id": "4d3bc08608cacaf04d2e577bc1320660cae94656628e147cfa8d165141e2dc75",
       "source_file": "assignment.pdf",
       "doc_type": "pdf",
       "chunk_index": 6,
       "text_preview": "Bias handling 25 Biases named, mitigated in code, and measured.\nJudge validation 20 Agreement/consistency/adversarial evidence, not claims.\nComparison & engineering 15 Clean A/B call; config hygiene, cost tracking, README."
     },
     {
-      "id": "58cf01421e7d8f21bca72518bb0f049db649313783b5145a1360f5ecd52219ea",
-      "document_id": "5a36ec2c689cdd85f8708d1aa107bd44c651e921d37776ccaca5073ee9754f10",
+      "id": "61f820b9733ee4adf8b53e6c208cd574c6ec4031482e38f64364090ac16ca677",
+      "document_id": "5a77ecf2a7e424304b3b85eba12d5f78b26f84f22c8ca13b17226f432815e20b",
       "source_file": "cost_analysis_notes.html",
       "doc_type": "html",
       "chunk_index": 0,
       "text_preview": "Cost Analysis Notes\nCost Analysis Notes\nLanceDB was selected as the low-cost vector store because it runs embedded with the application and avoids an always-on managed vector database bill.\nThe cost model compares 100K, 1M, and 10M stored vectors. The assumptions include 768-dimensional embeddings, 4 bytes per float, and 700 bytes of metadata and index overhead per vector.\nLocal storage is estimated at 0.08 dollars per GB per month. The managed vector database baseline is estimated at 70 dollars"
     },
     {
-      "id": "4cb970aa7efe805c056e20881fe461fe08888057fae4ed057ff4b781575cd298",
-      "document_id": "3a04fdf70c0481c47eb5810edf832d253ee2771cf129281b4f5e8b72802b7a3f",
+      "id": "fab7873980aedc047d5d15e653294f5da84c407baac3f2ce28cddfa9d5765e8d",
+      "document_id": "f10d7c91aa260599b94e15dc1337d08dc739368d70d67e6736693426705f39f9",
       "source_file": "rag_architecture_notes.md",
       "doc_type": "md",
       "chunk_index": 0,
       "text_preview": "# RAG Architecture Notes\nThe application uses FastAPI to expose a runnable HTTP service. The main endpoints are `/health`, `/ingest`, and `/query`.\nThe ingestion pipeline supports PDF, HTML, Markdown, and plain text files. It normalizes extracted text, splits content into chunks, and stores deterministic SHA-256 identifiers for documents and chunks.\nIdempotent re-ingestion is handled by deleting existing rows with the same chunk IDs before inserting updated rows. This prevents duplicate vectors "
     },
     {
-      "id": "22a4efc61cf419224f61292605c82bc2a7704fdd6e61912462b09dac78e8bd4a",
-      "document_id": "3a04fdf70c0481c47eb5810edf832d253ee2771cf129281b4f5e8b72802b7a3f",
+      "id": "daab8d663e985d69481108657adad7addf0314160d0f30b266c3ddf2775c69fe",
+      "document_id": "f10d7c91aa260599b94e15dc1337d08dc739368d70d67e6736693426705f39f9",
       "source_file": "rag_architecture_notes.md",
       "doc_type": "md",
       "chunk_index": 1,
       "text_preview": "The generation step builds a grounded prompt from retrieved chunks. If no relevant chunks are retrieved, the system returns a no-context response instead of hallucinating.\nPer-query telemetry is emitted as structured JSON. The telemetry includes latency in milliseconds, retrieved chunk count, token usage, provider, model, and whether the LLM call was skipped."
     },
     {
-      "id": "cf5bb6d8f34394631b2d3eee784d69d5c5be896ceb28cc4d024decf1937e1801",
-      "document_id": "1af6146324dc49da39cc909d813c4de0a059b36fe0d0bd001abdf56742580c36",
+      "id": "eb32ce9c776259303f74a8880dd0a79321733e2aa0f16a4b211671045b5ac559",
+      "document_id": "aed2ae5d6a8803ff7ea32f0e415e846148656886f4a21eb5d6e19cf60881984f",
       "source_file": "sample_rag_notes.md",
       "doc_type": "md",
       "chunk_index": 0,

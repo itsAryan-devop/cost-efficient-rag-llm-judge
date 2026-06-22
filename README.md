@@ -147,13 +147,13 @@ Latest evaluation summary:
 | Context Precision | 0.293 |
 | Faithfulness | 1.000 |
 | Answer Relevance | 1.000 |
-| p50 Total Latency (cached eval rerun) | 16 ms |
-| p95 Total Latency (cached eval rerun) | 30 ms |
-| p50 Retrieval Latency | 16 ms |
-| p95 Retrieval Latency | 29 ms |
-| Total Generation Tokens | 21088 |
+| p50 Total Latency | 6202 ms |
+| p95 Total Latency | 7987 ms |
+| p50 Retrieval Latency | 15 ms |
+| p95 Retrieval Latency | 25 ms |
+| Total Generation Tokens | 21141 |
 
-The latest cached rerun records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion. Token usage is retained from the original generated answers cached during evaluation.
+The latest run records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion.
 
 Metrics included:
 
@@ -218,6 +218,7 @@ Correctness and ingestion:
 - `src/ingestion.py`
 - `src/storage.py`
 - idempotent test: ingest twice, row count remains stable
+- stale-chunk test: changed documents replace old chunks instead of leaving duplicate/stale vectors
 - `tests/test_ingestion.py`
 
 Retrieval evaluation:
@@ -266,5 +267,5 @@ The accepted trade-off is operational ownership. LanceDB reduces infrastructure 
 Current test status:
 
 ```text
-18 passed
+21 passed
 ```

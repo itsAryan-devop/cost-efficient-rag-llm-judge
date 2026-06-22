@@ -13,6 +13,7 @@ def test_lancedb_upsert_is_idempotent(tmp_path):
         row = {
             "id": "chunk-1",
             "document_id": "doc-1",
+            "document_hash": "hash-1",
             "text": "hello world",
             "vector": [0.0] * settings.embedding_dimension,
             "metadata": {
@@ -28,5 +29,40 @@ def test_lancedb_upsert_is_idempotent(tmp_path):
         upsert_vectors([row])
 
         assert get_table().count_rows() == 1
+    finally:
+        settings.db_path = original_db_path
+
+
+def test_lancedb_upsert_removes_stale_chunks_for_same_document(tmp_path):
+    original_db_path = settings.db_path
+    settings.db_path = str(tmp_path / "lancedb")
+    try:
+        first = {
+            "id": "chunk-old",
+            "document_id": "doc-1",
+            "document_hash": "hash-old",
+            "text": "old text",
+            "vector": [0.0] * settings.embedding_dimension,
+            "metadata": {
+                "source_file": "sample.md",
+                "doc_type": "md",
+                "chunk_index": 0,
+                "chunk_size": 1000,
+                "chunk_overlap": 200,
+            },
+        }
+        second = {
+            **first,
+            "id": "chunk-new",
+            "document_hash": "hash-new",
+            "text": "new text",
+        }
+
+        upsert_vectors([first])
+        upsert_vectors([second])
+        rows = get_table().to_arrow().to_pylist()
+
+        assert get_table().count_rows() == 1
+        assert rows[0]["id"] == "chunk-new"
     finally:
         settings.db_path = original_db_path
