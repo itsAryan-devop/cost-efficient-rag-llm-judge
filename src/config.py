@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = 200
     top_k: int = 5
     max_retrieval_distance: float | None = 0.90
-    data_root: str = "data"
+    data_root: str = "data/corpus"
     db_path: str = "db/lancedb"
     cache_path: str = "cache/diskcache"
     reports_path: str = "reports"
