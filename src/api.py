@@ -1,25 +1,29 @@
 import time
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from pathlib import Path
-from typing import Optional
+
 from .config import settings
+from .embedding import get_embedding
+from .generation import generate_answer
 from .ingest import embed_chunks
 from .ingestion import process_documents
-from .embedding import get_embedding
-from .storage import upsert_vectors, search
-from .generation import generate_answer
 from .logger import log_query
+from .storage import search, upsert_vectors
 
 app = FastAPI(title="Cost-Efficient RAG Application")
+
 
 class QueryRequest(BaseModel):
     query: str = Field(..., min_length=1)
     top_k: int = Field(default=settings.top_k, ge=1, le=50)
-    metadata_filter: Optional[dict[str, str]] = None
+    metadata_filter: dict[str, str] | None = None
+
 
 class IngestRequest(BaseModel):
     data_dir: str = settings.data_root
+
 
 class SourceChunk(BaseModel):
     id: str
@@ -37,6 +41,7 @@ class SourceChunk(BaseModel):
 
     model_config = {"populate_by_name": True}
 
+
 class QueryResponse(BaseModel):
     answer: str
     sources: list[SourceChunk]
@@ -47,6 +52,7 @@ class QueryResponse(BaseModel):
     token_usage: int
     provider: str
     model: str
+
 
 def resolve_ingest_dir(data_dir: str) -> str:
     """Restrict API-triggered ingestion to DATA_ROOT to avoid accidental broad scans."""
@@ -62,9 +68,11 @@ def resolve_ingest_dir(data_dir: str) -> str:
 
     return str(requested)
 
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
 
 @app.post("/ingest")
 def ingest_documents(req: IngestRequest):
@@ -77,14 +85,15 @@ def ingest_documents(req: IngestRequest):
 
     if not chunks:
         return {"status": "success", "message": "No documents found or processed.", "chunks_processed": 0}
-        
+
     try:
         embed_chunks(chunks)
         upsert_vectors(chunks)
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Ingestion failed: {exc}") from exc
-    
+
     return {"status": "success", "chunks_processed": len(chunks)}
+
 
 @app.post("/query", response_model=QueryResponse)
 def query_rag(req: QueryRequest):
@@ -109,9 +118,9 @@ def query_rag(req: QueryRequest):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Query failed: {exc}") from exc
-    
+
     latency = (time.time() - start_time) * 1000
-    
+
     log_query(
         req.query,
         latency,
@@ -124,7 +133,7 @@ def query_rag(req: QueryRequest):
         retrieval_latency_ms=round(retrieval_latency_ms, 2),
         generation_latency_ms=round(generation_latency_ms, 2),
     )
-    
+
     return {
         "answer": generation.answer,
         "sources": results,

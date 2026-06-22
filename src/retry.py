@@ -37,7 +37,7 @@ def status_code(exc: Exception) -> int:
 
 
 def _backoff_seconds(attempt: int) -> float:
-    return min(2 ** attempt, 4)
+    return min(2**attempt, 4)
 
 
 def retry_on_transient(

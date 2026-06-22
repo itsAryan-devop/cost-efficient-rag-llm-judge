@@ -25,13 +25,8 @@ import os
 import re
 import time
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from src.config import settings
-from src.embedding import get_embedding
-from src.generation import NO_CONTEXT_MESSAGE, generate_answer
-from src.logger import log_event
-from src.storage import search
 from eval.ir_metrics import (
     average_precision,
     hit_rate,
@@ -42,6 +37,11 @@ from eval.ir_metrics import (
 )
 from eval.llm_judge import evaluate_answer
 from eval.text_metrics import exact_match, token_f1
+from src.config import settings
+from src.embedding import get_embedding
+from src.generation import NO_CONTEXT_MESSAGE, generate_answer
+from src.logger import log_event
+from src.storage import search
 
 TOP_K = 5
 
@@ -135,12 +135,16 @@ def _run_cold_query(query: str):
         retrieval_latency_ms=round(retrieval_ms, 2),
         generation_latency_ms=round(generation_ms, 2),
     )
-    return sources, generation, {
-        "embedding_ms": embedding_ms,
-        "retrieval_ms": retrieval_ms,
-        "generation_ms": generation_ms,
-        "total_ms": total_ms,
-    }
+    return (
+        sources,
+        generation,
+        {
+            "embedding_ms": embedding_ms,
+            "retrieval_ms": retrieval_ms,
+            "generation_ms": generation_ms,
+            "total_ms": total_ms,
+        },
+    )
 
 
 def _evaluate_case(item: dict) -> dict:
@@ -214,11 +218,13 @@ def _run_adversarial_probes() -> list[dict]:
                 "token_f1": round(token_f1(answer, probe["reference_answer"]), 3),
                 "faithfulness_rationale": judge.faithfulness_rationale,
             }
-        probes.append({
-            "query": probe["query"],
-            "judge_provider": provider,
-            "graded": graded,
-        })
+        probes.append(
+            {
+                "query": probe["query"],
+                "judge_provider": provider,
+                "graded": graded,
+            }
+        )
     return probes
 
 
@@ -239,13 +245,15 @@ def _aggregate(results: list[dict], probes: list[dict]) -> dict:
         "Distance-gated refusal needs real semantic embeddings; bag-of-words mock embeddings "
         "cannot separate out-of-corpus queries, so refusal is validated by unit tests "
         "(tests/test_generation.py) and the live smoke (reports/smoke_results.json)."
-        if is_mock else None
+        if is_mock
+        else None
     )
     answer_note = (
         "Offline run: system answers come from the mock generator (a placeholder), so per-case "
         "EM/F1/faithfulness reflect that, not real LLM output. Real answer quality is shown by the "
         "adversarial probes and the live smoke."
-        if settings.generation_provider.lower() == "mock" else None
+        if settings.generation_provider.lower() == "mock"
+        else None
     )
 
     return {
@@ -275,9 +283,15 @@ def _aggregate(results: list[dict], probes: list[dict]) -> dict:
             "note": refusal_note,
         },
         "adversarial_probe_summary": {
-            "mean_faithfulness_correct": round(sum(probe_correct) / len(probe_correct), 3) if probe_correct else None,
-            "mean_faithfulness_confidently_wrong": round(sum(probe_wrong) / len(probe_wrong), 3) if probe_wrong else None,
-            "judge_discriminates": bool(probe_correct and probe_wrong and min(probe_correct) > max(probe_wrong)),
+            "mean_faithfulness_correct": (
+                round(sum(probe_correct) / len(probe_correct), 3) if probe_correct else None
+            ),
+            "mean_faithfulness_confidently_wrong": (
+                round(sum(probe_wrong) / len(probe_wrong), 3) if probe_wrong else None
+            ),
+            "judge_discriminates": bool(
+                probe_correct and probe_wrong and min(probe_correct) > max(probe_wrong)
+            ),
         },
         "latency_cold_ms": {
             "embedding": cold("embedding_latency_ms"),
@@ -309,7 +323,7 @@ def _write_report(report: dict, output_path: str) -> None:
 
 
 def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None = None):
-    with open(test_set_path, "r", encoding="utf-8") as f:
+    with open(test_set_path, encoding="utf-8") as f:
         dataset = json.load(f)
 
     if not dataset:
@@ -337,7 +351,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
 
         # Persist partial results after every case so a mid-run failure is never lost.
         report = {
-            "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "summary": _aggregate(results, probes),
             "results": results,
             "adversarial_probes": probes,
@@ -346,11 +360,25 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
 
     summary = report["summary"]
     print("=== Evaluation Summary ===")
-    print(json.dumps({k: summary[k] for k in (
-        "case_count", "answerable_count", "refusal_count", "failed_count",
-        "retrieval", "answer_quality", "refusal", "adversarial_probe_summary",
-        "latency_cold_ms",
-    )}, indent=2))
+    print(
+        json.dumps(
+            {
+                k: summary[k]
+                for k in (
+                    "case_count",
+                    "answerable_count",
+                    "refusal_count",
+                    "failed_count",
+                    "retrieval",
+                    "answer_quality",
+                    "refusal",
+                    "adversarial_probe_summary",
+                    "latency_cold_ms",
+                )
+            },
+            indent=2,
+        )
+    )
     if summary["failed_cases"]:
         print(f"\nWARNING: {len(summary['failed_cases'])} case(s) failed:")
         for fc in summary["failed_cases"]:

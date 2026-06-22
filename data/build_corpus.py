@@ -34,9 +34,7 @@ CORPUS_DIR = os.path.join(HERE, "corpus")
 ACCESS_DATE = date.today().isoformat()
 
 WIKI_API = "https://en.wikipedia.org/w/api.php"
-FASTAPI_FEATURES_URL = (
-    "https://raw.githubusercontent.com/fastapi/fastapi/master/docs/en/docs/features.md"
-)
+FASTAPI_FEATURES_URL = "https://raw.githubusercontent.com/fastapi/fastapi/master/docs/en/docs/features.md"
 
 # Sections at/after which the trailing apparatus of an article begins.
 TAIL_MARKERS = (
@@ -122,14 +120,14 @@ def plaintext_to_html(title: str, body: str, attribution: str) -> str:
 
 
 _PDF_REPLACEMENTS = {
-    "—": "-",   # em dash
-    "–": "-",   # en dash
+    "—": "-",  # em dash
+    "–": "-",  # en dash
     "→": "->",  # right arrow
     "‘": "'",
     "’": "'",
     "“": '"',
     "”": '"',
-    " ": " ",   # non-breaking space
+    " ": " ",  # non-breaking space
     "…": "...",
     "·": "-",
 }
@@ -148,7 +146,7 @@ def plaintext_to_pdf(title: str, body: str, attribution: str, out_path: str) -> 
 
     # Pre-wrap to short physical lines so fpdf's word-wrap never has to scan a
     # long line (char-level wrapping is O(n^2) and stalls on big paragraphs).
-    def emit(pdf: "FPDF", text: str, height: float) -> None:
+    def emit(pdf: FPDF, text: str, height: float) -> None:
         for piece in textwrap.wrap(
             _ascii_sanitize(text), width=95, break_long_words=True, break_on_hyphens=False
         ) or [""]:

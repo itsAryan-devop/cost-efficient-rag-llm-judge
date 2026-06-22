@@ -13,7 +13,7 @@ managed side scale with query volume and are called out separately.
 import json
 import os
 from dataclasses import asdict, dataclass
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from src.config import settings
 
@@ -62,7 +62,7 @@ def estimate_index_gb(vector_count: int, assumptions: CostAssumptions) -> float:
         assumptions.vector_dimension * assumptions.bytes_per_float
         + assumptions.metadata_overhead_bytes_per_vector
     )
-    return vector_count * bytes_per_vector / (1024 ** 3)
+    return vector_count * bytes_per_vector / (1024**3)
 
 
 def estimate_rows(scales=(100_000, 1_000_000, 10_000_000), assumptions=None):
@@ -88,20 +88,20 @@ def estimate_rows(scales=(100_000, 1_000_000, 10_000_000), assumptions=None):
         managed_total = max(assumptions.managed_plan_minimum_month, managed_storage)
 
         embedding_tokens = vector_count * assumptions.avg_tokens_per_chunk
-        embedding_cost = (
-            embedding_tokens / 1_000_000 * assumptions.embedding_cost_per_million_input_tokens
-        )
+        embedding_cost = embedding_tokens / 1_000_000 * assumptions.embedding_cost_per_million_input_tokens
 
-        rows.append({
-            "vectors": vector_count,
-            "estimated_index_gb": round(index_gb, 3),
-            "lancedb_storage_cost_month": round(lancedb_storage, 2),
-            "lancedb_host_cost_month": round(assumptions.lancedb_host_cost_month, 2),
-            "lancedb_total_cost_month": round(lancedb_total, 2),
-            "managed_storage_cost_month": round(managed_storage, 2),
-            "managed_total_cost_month": round(managed_total, 2),
-            "one_time_embedding_cost": round(embedding_cost, 2),
-        })
+        rows.append(
+            {
+                "vectors": vector_count,
+                "estimated_index_gb": round(index_gb, 3),
+                "lancedb_storage_cost_month": round(lancedb_storage, 2),
+                "lancedb_host_cost_month": round(assumptions.lancedb_host_cost_month, 2),
+                "lancedb_total_cost_month": round(lancedb_total, 2),
+                "managed_storage_cost_month": round(managed_storage, 2),
+                "managed_total_cost_month": round(managed_total, 2),
+                "one_time_embedding_cost": round(embedding_cost, 2),
+            }
+        )
     return assumptions, rows
 
 
@@ -139,7 +139,7 @@ def break_even_note(assumptions: CostAssumptions) -> str:
 def run(output_path=None):
     assumptions, rows = estimate_rows()
     report = {
-        "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "report_date": date.today().isoformat(),
         "managed_baseline": {
             "provider": MANAGED_PROVIDER,
@@ -150,7 +150,7 @@ def run(output_path=None):
             "read_cost_per_million_ru": assumptions.managed_read_cost_per_million_ru,
             "write_cost_per_million_wu": assumptions.managed_write_cost_per_million_wu,
             "note": "Read/write unit costs scale with query volume and are additional to the totals "
-                    "above; for a lightly-queried index they are covered by the plan minimum.",
+            "above; for a lightly-queried index they are covered by the plan minimum.",
         },
         "assumptions": {
             **asdict(assumptions),

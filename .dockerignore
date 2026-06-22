@@ -1,0 +1,23 @@
+# Keep the image small and never copy secrets or local state into it.
+.git
+.gitignore
+.venv
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.env
+db/
+cache/
+reports/
+*.log
+HANDOFF_TO_CLAUDE_CODE.md
+CHANGES.md
+tests/
+.github/
+docker-compose.yml
+Dockerfile
+.dockerignore
+render.yaml
+Makefile
+requirements-dev.txt

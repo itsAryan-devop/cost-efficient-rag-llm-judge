@@ -1,0 +1,7 @@
+# Development / test / corpus-build tooling (not needed to run the service).
+-r requirements.txt
+pytest==9.1.1
+httpx==0.28.1            # required by fastapi.testclient
+ruff==0.15.18
+black==26.5.1
+fpdf2==2.8.7             # used only by data/build_corpus.py to render the PDF corpus

@@ -8,8 +8,8 @@ from google.genai.errors import ClientError, ServerError
 
 from .config import settings
 from .logger import log_event
-from .retry import ROTATABLE_STATUS_CODES, RETRYABLE_STATUS_CODES, status_code as _shared_status_code
-
+from .retry import RETRYABLE_STATUS_CODES, ROTATABLE_STATUS_CODES
+from .retry import status_code as _shared_status_code
 
 T = TypeVar("T")
 
@@ -20,9 +20,7 @@ def get_gemini_api_keys() -> list[str]:
 
     if settings.gemini_api_keys:
         candidates.extend(
-            key.strip()
-            for key in re.split(r"[,;\n]+", settings.gemini_api_keys)
-            if key.strip()
+            key.strip() for key in re.split(r"[,;\n]+", settings.gemini_api_keys) if key.strip()
         )
 
     if settings.gemini_api_key:
@@ -66,9 +64,7 @@ def call_with_gemini_key(purpose: str, operation: Callable[[genai.Client], T]) -
                 last_error = exc
                 retryable = status_code in RETRYABLE_STATUS_CODES and attempt < max_retries - 1
                 should_rotate = (
-                    status_code in ROTATABLE_STATUS_CODES
-                    and not retryable
-                    and key_index < len(keys) - 1
+                    status_code in ROTATABLE_STATUS_CODES and not retryable and key_index < len(keys) - 1
                 )
                 log_event(
                     "gemini_call_failed",
