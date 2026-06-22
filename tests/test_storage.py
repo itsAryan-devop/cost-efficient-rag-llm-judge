@@ -14,6 +14,8 @@ def test_lancedb_upsert_is_idempotent(tmp_path):
             "id": "chunk-1",
             "document_id": "doc-1",
             "document_hash": "hash-1",
+            "embedding_model": "test-embedding",
+            "embedding_dimension": settings.embedding_dimension,
             "text": "hello world",
             "vector": [0.0] * settings.embedding_dimension,
             "metadata": {
@@ -29,6 +31,9 @@ def test_lancedb_upsert_is_idempotent(tmp_path):
         upsert_vectors([row])
 
         assert get_table().count_rows() == 1
+        stored = get_table().to_arrow().to_pylist()[0]
+        assert stored["embedding_model"] == "test-embedding"
+        assert stored["embedding_dimension"] == settings.embedding_dimension
     finally:
         settings.db_path = original_db_path
 
@@ -41,6 +46,8 @@ def test_lancedb_upsert_removes_stale_chunks_for_same_document(tmp_path):
             "id": "chunk-old",
             "document_id": "doc-1",
             "document_hash": "hash-old",
+            "embedding_model": "test-embedding",
+            "embedding_dimension": settings.embedding_dimension,
             "text": "old text",
             "vector": [0.0] * settings.embedding_dimension,
             "metadata": {

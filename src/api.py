@@ -53,6 +53,8 @@ def ingest_documents(req: IngestRequest):
     try:
         for chunk in chunks:
             chunk["vector"] = get_embedding(chunk["text"], input_type="document")
+            chunk["embedding_model"] = settings.embedding_model
+            chunk["embedding_dimension"] = settings.embedding_dimension
         upsert_vectors(chunks)
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Ingestion failed: {exc}") from exc

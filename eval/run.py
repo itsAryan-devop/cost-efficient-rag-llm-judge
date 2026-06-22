@@ -88,6 +88,8 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
             "top_k": settings.top_k,
             "min_relevance_score": settings.min_relevance_score,
             "embedding_provider": settings.embedding_provider,
+            "embedding_model": settings.embedding_model,
+            "embedding_dimension": settings.embedding_dimension,
             "generation_provider": settings.generation_provider,
             "judge_provider": settings.judge_provider,
         },

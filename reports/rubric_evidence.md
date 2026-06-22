@@ -7,7 +7,7 @@ This file maps the submitted artifacts to the Problem 1 scoring rubric.
 Evidence:
 
 - `src/ingestion.py` supports PDF, HTML, Markdown, and text files.
-- `src/storage.py` stores vectors, chunk text, stable document ID, content hash, source file, document type, chunk index, chunk size, and chunk overlap.
+- `src/storage.py` stores vectors, chunk text, embedding model, embedding dimensionality, stable document ID, content hash, source file, document type, chunk index, chunk size, and chunk overlap.
 - `tests/test_storage.py` verifies idempotent LanceDB upsert behavior and stale-chunk replacement when a document changes.
 - `data/assignment.pdf`, `data/cost_analysis_notes.html`, and `data/rag_architecture_notes.md` prove all required ingestion formats are exercised.
 

@@ -22,7 +22,7 @@ src/
   config.py          Environment-based config
   ingestion.py       PDF/HTML/MD/TXT parsing, normalization, chunking, hashes
   embedding.py       Gemini/mock embeddings with disk cache
-  storage.py         LanceDB table, idempotent upsert, metadata filters
+  storage.py         LanceDB table, idempotent upsert, embedding metadata, filters
   generation.py      Grounded answer generation with citations
   logger.py          Structured JSON telemetry
 eval/
@@ -147,13 +147,13 @@ Latest evaluation summary:
 | Context Precision | 0.293 |
 | Faithfulness | 1.000 |
 | Answer Relevance | 1.000 |
-| p50 Total Latency | 6202 ms |
-| p95 Total Latency | 7987 ms |
-| p50 Retrieval Latency | 15 ms |
-| p95 Retrieval Latency | 25 ms |
+| p50 Total Latency (warm-cache rerun) | 16 ms |
+| p95 Total Latency (warm-cache rerun) | 18 ms |
+| p50 Retrieval Latency | 16 ms |
+| p95 Retrieval Latency | 18 ms |
 | Total Generation Tokens | 21141 |
 
-The latest run records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion.
+The latest run records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion. Total latency in this table is a warm-cache rerun, while token usage is retained from cached generation results.
 
 Metrics included:
 
@@ -218,6 +218,7 @@ Correctness and ingestion:
 - `src/ingestion.py`
 - `src/storage.py`
 - idempotent test: ingest twice, row count remains stable
+- embedding metadata test: stored rows include embedding model and dimensionality
 - stale-chunk test: changed documents replace old chunks instead of leaving duplicate/stale vectors
 - `tests/test_ingestion.py`
 
