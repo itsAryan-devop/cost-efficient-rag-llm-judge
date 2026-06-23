@@ -1,273 +1,202 @@
-# Cost-Efficient RAG Application
+# Cost-Efficient RAG Application (Problem 1)
 
-Problem 1 implementation for the Applied AI / ML Engineering take-home assignment.
+A small, low-cost RAG service over PDF / HTML / Markdown / text. FastAPI HTTP API,
+embedded **LanceDB** vector store, Gemini embeddings, and Groq/Gemini generation —
+chosen so there is no always-on managed vector-database bill.
 
-This project is a local, low-cost RAG service over PDF, HTML, Markdown, and text files. It uses FastAPI for the HTTP API, LanceDB for embedded vector search, Gemini embeddings by default, and optional Gemini/Groq generation.
+## 30-second what + why LanceDB
 
-## Why This Design
+LanceDB runs **embedded in the app process**: it stores vectors + metadata together,
+supports metadata filtering, and needs no separate database server. For a small/mid,
+lightly-queried RAG index that makes it far cheaper than a managed vector DB (see
+[Cost analysis](#cost-analysis)).
 
-The assignment asks for a credible low-cost alternative to an always-on managed vector database. LanceDB fits that goal because it runs embedded in the app, stores vectors and metadata together, supports metadata filtering, and avoids a separate database server for small to mid-scale RAG workloads.
+**Accepted trade-offs:** embedded LanceDB is great for single-service/low-cost
+deployments but not for many concurrent writers, multi-region HA, or managed
+backups — that is when a managed service wins. The code prefers explicit modules
+over a heavy RAG framework so ingestion, retrieval, cost and evaluation stay auditable.
 
-Accepted trade-offs:
+## Honest results (offline mock run, 26 questions)
 
-- Embedded LanceDB is excellent for local/single-service deployments but not the best choice for many concurrent writers.
-- Managed services still win when the system needs multi-region availability, automatic backups, team operations, or high-concurrency scaling.
-- This implementation prefers explicit code over heavy RAG frameworks so ingestion, retrieval, cost, and evaluation stay auditable.
-
-## Project Layout
-
-```text
-src/
-  api.py             FastAPI endpoints
-  config.py          Environment-based config
-  ingestion.py       PDF/HTML/MD/TXT parsing, normalization, chunking, hashes
-  embedding.py       Gemini/mock embeddings with disk cache
-  storage.py         LanceDB table, idempotent upsert, embedding metadata, filters
-  generation.py      Grounded answer generation with citations
-  logger.py          Structured JSON telemetry
-eval/
-  ir_metrics.py      Recall@k, hit rate, MRR, nDCG@k, context precision
-  llm_judge.py       Faithfulness and relevance judge with rationales
-  run.py             Evaluation runner
-  export_chunks.py   Chunk inventory for labeling evaluation questions
-  cost_analysis.py   Reproducible cost comparison
-data/                Corpus files
-reports/             Generated evaluation/cost/chunk reports
-tests/               Pytest tests for critical behavior
-```
-
-## Setup
-
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-Edit `.env` and add your keys. Do not commit `.env`.
-
-For Gemini, the app supports key rotation:
-
-```env
-GEMINI_API_KEY=primary_key_here
-GEMINI_API_KEYS=primary_key_here,backup_key_here
-```
-
-If one Gemini key hits a quota/rate-limit error, the app tries the next key and logs only the key index, never the key value.
-
-Recommended free/low-cost config:
-
-```env
-DATA_ROOT=data
-EMBEDDING_PROVIDER=gemini
-GENERATION_PROVIDER=groq
-JUDGE_PROVIDER=gemini
-EMBEDDING_MODEL=gemini-embedding-2
-GENERATION_MODEL=gemini-2.5-flash
-GROQ_MODEL=llama-3.3-70b-versatile
-JUDGE_MODEL=gemini-2.5-flash
-```
-
-Gemini is used for embeddings and answer judging in the current run. Groq is used for answer generation because it is a practical free-tier backup when Gemini generation quota is tight. The embedding, generation, and judging providers are independently configurable, and `JUDGE_MODEL` can be set to a smaller model when evaluation quotas are tight.
-
-For free local smoke tests without API calls:
-
-```env
-EMBEDDING_PROVIDER=mock
-GENERATION_PROVIDER=mock
-JUDGE_PROVIDER=mock
-DB_PATH=db/mock_lancedb
-CACHE_PATH=cache/mock_diskcache
-```
-
-## Run The API
-
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn src.api:app --reload
-```
-
-Open Swagger UI:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Useful endpoints:
-
-- `GET /health`
-- `POST /ingest` with `{"data_dir": "data"}`
-- `POST /query` with `{"query": "...", "top_k": 5}`
-- Metadata filter example: `{"query": "...", "metadata_filter": {"doc_type": "pdf"}}`
-
-No-context handling is controlled by `MAX_RETRIEVAL_DISTANCE`. LanceDB distance is lower-is-better, and the default `0.90` skips the LLM when the nearest chunk is too far away. This prevents unsupported answers and saves tokens.
-
-The API validates empty queries, invalid `top_k` values, and unsupported metadata filters so bad requests return clear client errors.
-
-API-triggered ingestion is restricted to `DATA_ROOT` so a user cannot accidentally point the service at a huge or sensitive folder outside the project.
-
-## Evaluation Workflow
-
-The included corpus in `data/` intentionally covers all required ingestion formats:
-
-- `assignment.pdf` for PDF ingestion
-- `cost_analysis_notes.html` for HTML ingestion
-- `rag_architecture_notes.md` and `sample_rag_notes.md` for Markdown ingestion
-
-The included `eval/test_set.json` contains 15 fixed questions labeled with relevant chunk IDs from this corpus.
-
-1. Put final corpus files into `data/`.
-2. Run ingestion.
-3. Export chunk IDs:
-
-```powershell
-.\.venv\Scripts\python.exe -m eval.export_chunks
-```
-
-4. Use `reports/chunk_inventory.json` to label 15-30 evaluation questions in `eval/test_set.json`.
-5. Run evaluation:
-
-```powershell
-.\.venv\Scripts\python.exe -m eval.run
-```
-
-The evaluation report is saved to:
-
-```text
-reports/evaluation_results.json
-```
-
-Latest evaluation summary:
+These come from `python -m eval.run` with **mock providers** (no API keys, fully
+reproducible). Numbers are intentionally *not* perfect — that is the point.
 
 | Metric | Value |
 |---|---:|
-| Cases | 15 |
-| Recall@5 | 1.000 |
-| Hit Rate | 1.000 |
-| MRR | 0.967 |
-| nDCG@5 | 0.959 |
-| Context Precision | 0.307 |
-| Faithfulness | 1.000 |
-| Answer Relevance | 1.000 |
-| p50 Total Latency (warm-cache rerun) | 15 ms |
-| p95 Total Latency (warm-cache rerun) | 16 ms |
-| p50 Retrieval Latency | 14 ms |
-| p95 Retrieval Latency | 15 ms |
-| Total Generation Tokens | 21146 |
+| Questions (answerable / refusal) | 23 / 3 |
+| Recall@5 | **0.826** |
+| Hit Rate | 0.826 |
+| MRR | 0.592 |
+| nDCG@5 | 0.651 |
+| Precision@5 | 0.165 |
+| Average Precision | 0.592 |
+| Adversarial probe — faithfulness on a *correct* answer | **5 / 5** |
+| Adversarial probe — faithfulness on a *confidently-wrong* answer | **1 / 5** |
 
-The latest run records embedding, retrieval, and generation latency separately in `reports/evaluation_results.json`; retrieval latency is the number used for vector-store speed discussion. Total latency in this table is a warm-cache rerun, while token usage is retained from cached generation results.
+Retrieval is **not 1.000**: the corpus is independent of the questions (see
+[Corpus](#corpus--provenance)), and mock embeddings are a weak bag-of-words stand-in,
+so the score reflects the system, not a rigged corpus. With real Gemini embeddings it
+would be higher, but mock keeps the committed numbers reproducible and quota-free.
 
-Metrics included:
+### Answer quality, EM/F1, and the judge
 
-- Retrieval: Recall@5, hit rate, MRR, nDCG@5, context precision
-- Answer quality: faithfulness/groundedness and answer relevance, evaluated in one cost-efficient judge call with rationales and raw judge response
-- Operations: latency and token usage
+The judge scores **faithfulness** and **relevance** on a graded **1–5** scale. To
+prove it actually discriminates (rather than returning 1.0 on everything), the
+harness runs an **adversarial probe set**: for several questions it judges a planted
+*correct*, *confidently-wrong*, and *verbose-unsupported* answer. The judge gives the
+correct answer 5/5 and the wrong/unsupported ones 1/5, and SQuAD-style **Exact Match /
+token-F1** drop the same way (`adversarial_probes` in `reports/evaluation_results.json`).
 
-## Cost Analysis
+In the offline run the *system* answers come from the mock generator (a placeholder),
+so per-case EM/F1/faithfulness on system output are low by construction — real answer
+quality is shown by the probes and the optional live smoke. The judge provider/family
+is kept different from the generator so it never grades its own model.
 
-Generate the cost report:
+### Latency (cold)
 
-```powershell
-.\.venv\Scripts\python.exe -m eval.cost_analysis
+The eval runs every query **cold** (caches bypassed) and records each stage
+separately, so these are real-work numbers, not warm-cache hits.
+
+| Stage (cold) | p50 | p95 |
+|---|---:|---:|
+| Embedding (mock) | ~0 ms | ~1 ms |
+| **Retrieval (vector store)** | **~12 ms** | **~18 ms** |
+| Generation (mock) | ~0 ms | ~2 ms |
+| Total | ~13 ms | ~18 ms |
+
+These are **mock** timings (no network). With real providers, per-query latency is
+dominated by the API calls: embedding ≈ 0.8–0.9 s + generation ≈ 0.7 s, with
+retrieval still ≈ 25 ms — i.e. real total ≈ **1.5–1.6 s** per cold query, not 15 ms.
+Warm-cache repeats are near-zero but are explicitly a cache artifact, not query speed.
+The vector-store metric to compare is **retrieval-only (~12–25 ms)**.
+
+### Refusal (no-context)
+
+Out-of-corpus questions should be declined. Distance-gated refusal needs real
+*semantic* embeddings — bag-of-words mock embeddings can't separate out-of-corpus
+queries, so in the mock run `refusal_accuracy` is reported but not meaningful. Refusal
+is validated by unit tests (`tests/test_generation.py`) and the live smoke below.
+
+## Corpus & provenance
+
+The evaluated corpus in `data/corpus/` is **independent third-party material** — none
+of it was written by this project's author, so questions can't be answered "from the
+author's own notes". Built reproducibly by `python -m data.build_corpus`; full sources
+and licenses in [`data/SOURCES.md`](data/SOURCES.md):
+
+| File | Format | Source | License |
+|---|---|---|---|
+| `fastapi_features.md` | Markdown | FastAPI docs | MIT |
+| `vector_search_and_rag.html` | HTML | Wikipedia (Vector database / NN search / RAG) | CC BY-SA 4.0 |
+| `http_status_codes.pdf` | PDF | Wikipedia (HTTP status codes) | CC BY-SA 4.0 |
+
+## Setup (local venv)
+
+```bash
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements-dev.txt   # Windows
+# .venv/bin/python   -m pip install -r requirements-dev.txt       # POSIX
+cp .env.example .env        # fill in keys, or set *_PROVIDER=mock for a keyless run
 ```
 
-Output:
+Recommended config (in `.env.example`): `EMBEDDING_PROVIDER=gemini`,
+`GENERATION_PROVIDER=groq`, `JUDGE_PROVIDER=gemini` (judge family ≠ generator family).
+Gemini supports key rotation via `GEMINI_API_KEYS=key1,key2`.
 
-```text
-reports/cost_analysis.json
+`CHUNK_SIZE`/`CHUNK_OVERLAP` are **characters** (RecursiveCharacterTextSplitter).
+
+## Run it
+
+```bash
+# ingest the corpus, then serve
+python -m src.ingest
+python -m uvicorn src.api:app --host 0.0.0.0 --port 8000
 ```
 
-Current assumptions:
+```bash
+# health / readiness
+curl localhost:8000/health
+curl localhost:8000/ready      # row count + embedding model/dim
 
-- 768-dimensional embeddings
-- 4 bytes per vector float
-- 700 bytes metadata/index overhead per vector
-- Local storage: `$0.08/GB/month`
-- Managed vector DB baseline estimate: `$70/month`
-- One-time embedding estimate: `$0.15 / 1M input tokens`
-- Average chunk size estimate: 180 tokens
+# ingest (restricted to DATA_ROOT) and query
+curl -X POST localhost:8000/ingest -H 'content-type: application/json' -d '{"data_dir":"data/corpus"}'
+curl -X POST localhost:8000/query  -H 'content-type: application/json' \
+     -d '{"query":"What does HTTP status code 502 mean?","top_k":5}'
+# metadata filter: {"query":"...","metadata_filter":{"doc_type":"pdf"}}
+```
 
-| Vectors | Est. Index Size (GB) | LanceDB Storage ($/mo) | Managed DB Est. ($/mo) | One-time Embedding Cost ($) |
-|---:|---:|---:|---:|---:|
-| 100,000 | 0.351 | 0.03 | 70.0 | 2.7 |
-| 1,000,000 | 3.513 | 0.28 | 70.0 | 27.0 |
-| 10,000,000 | 35.129 | 2.81 | 160.0 | 270.0 |
+Interactive docs at `http://localhost:8000/docs`.
+
+### Docker
+
+```bash
+cp .env.example .env          # optional; /health, /ready, /docs work without keys
+docker compose up --build     # serves on :8000, persists db/ in a volume
+```
+
+## Make targets
+
+`make setup | test | lint | ingest | eval | cost | serve | docker-build | docker-run`
+(override the interpreter with `PYTHON=.venv/Scripts/python.exe`). CI
+(`.github/workflows/ci.yml`) runs `make lint` + `make test` on a clean checkout with
+mock providers.
+
+## Evaluation & cost
+
+```bash
+python -m eval.export_chunks    # reports/chunk_inventory.json (chunk IDs)
+python -m eval.build_test_set   # regenerate eval/test_set.json labels
+python -m eval.run              # reports/evaluation_results.json
+python -m eval.cost_analysis    # reports/cost_analysis.json
+```
+
+Retrieval: Recall@5, Hit Rate, MRR, nDCG@5, **Precision@5** (renamed from the
+mislabelled `context_precision`) and order-aware **Average Precision**. Answer:
+EM, token-F1, and the 1–5 judge. The runner wraps each case in try/except and
+**persists partial results after every case**, so a mid-run provider/quota error never
+loses completed work.
+
+## Cost analysis
+
+LanceDB still needs an always-on host, so its total is **storage + compute**, compared
+against a **named, sourced** managed baseline: Pinecone serverless (Standard) —
+$0.33/GB-mo + $50/mo plan minimum + read/write units, per
+<https://www.pinecone.io/pricing/> (retrieved 2026-06-23). Host cost is configurable
+via `LANCEDB_HOST_COST_MONTH`.
+
+| Vectors | Index (GB) | LanceDB storage | LanceDB host | **LanceDB total** | **Managed total** | One-time embedding |
+|---:|---:|---:|---:|---:|---:|---:|
+| 100,000 | 0.351 | $0.03 | $10 | **$10.03** | **$50.00** | $2.73 |
+| 1,000,000 | 3.513 | $0.28 | $10 | **$10.28** | **$50.00** | $27.27 |
+| 10,000,000 | 35.129 | $2.81 | $10 | **$12.81** | **$50.00** | $272.73 |
+
+Embedding cost converts characters→tokens (~4.4 chars/token, so ~182 tokens/chunk).
+**Break-even:** at these scales LanceDB is ~5× cheaper; managed wins once you need
+multi-region HA / managed backups / SLAs, or such high query concurrency that the
+always-on host for LanceDB would itself exceed the ~$50/mo managed minimum.
 
 ## Telemetry
 
-Each query logs one JSON line:
+Every query logs one JSON line including `cached` (cold vs warm), `skipped_llm`, and
+per-stage latency. Provider failures retry with backoff on 429/5xx (shared helper for
+Gemini key-rotation and Groq); only the key *index* is logged, never the key.
 
-```json
-{
-  "event": "query",
-  "query": "What is the default chunk overlap?",
-  "latency_ms": 70.16,
-  "chunk_count": 1,
-  "token_usage": 0,
-  "provider": "mock",
-  "model": "mock",
-  "skipped_llm": false,
-  "embedding_latency_ms": 10.2,
-  "retrieval_latency_ms": 4.1,
-  "generation_latency_ms": 55.8
-}
-```
+## Live smoke (optional)
 
-## Rubric Evidence
+`python -m eval.smoke` runs a tiny real-provider check (≤3 generate calls): it confirms
+out-of-corpus questions are **refused** (0 generate calls — refusal skips the LLM) and
+that 1–2 grounded answers are judged high, recording real cold latency to
+`reports/smoke_results.json`. It is **provided but not executed in this submission to
+preserve API quota** (and skips automatically if no keys are configured).
 
-Correctness and ingestion:
+## Limitations / what I'd do with more time
 
-- `src/ingestion.py`
-- `src/storage.py`
-- idempotent test: ingest twice, row count remains stable
-- embedding metadata test: stored rows include embedding model and dimensionality
-- stale-chunk test: changed documents replace old chunks instead of leaving duplicate/stale vectors
-- `tests/test_ingestion.py`
-
-Retrieval evaluation:
-
-- `eval/ir_metrics.py`
-- `eval/run.py`
-- `reports/evaluation_results.json`
-
-Answer evaluation:
-
-- `eval/llm_judge.py`
-- faithfulness, relevance, judge rationale, and raw judge response fields in `reports/evaluation_results.json`
-
-Cost analysis:
-
-- `eval/cost_analysis.py`
-- `reports/cost_analysis.json`
-- cost table above
-
-Engineering and clarity:
-
-- environment-only config
-- `.env.example`
-- `.gitignore`
-- JSON logging
-- tests
-- this README
-
-## Discussion
-
-Retrieval was the stronger layer in the current run. The system found at least one relevant chunk for every evaluation question, with high MRR and nDCG. Context precision is lower because `top_k=5` returns several neighboring chunks from a small corpus. In a larger production corpus, this would be tuned by lowering `top_k`, adding a distance threshold, reranking, or tightening chunk sizes.
-
-Generation was reliable in this small evaluation because the prompt required citations and the Gemini judge found the answers faithful and relevant. The main operational weakness was provider quota: free-tier generation and judging can hit request limits during repeated evaluation. This is why the project keeps embedding, generation, and judging providers independently configurable, uses disk caching, rotates Gemini keys, and judges faithfulness/relevance in one combined call.
-
-I would switch back to a managed vector database when the workload needs many concurrent writers, multi-region availability, automatic backups, strict uptime guarantees, or team operations around monitoring and scaling. For a lightly queried, cost-sensitive RAG index, embedded LanceDB is a credible lower-cost choice.
-
-The accepted trade-off is operational ownership. LanceDB reduces infrastructure cost, but the application owner must manage storage, backups, deployment, and scaling behavior.
-
-## Local Verification
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m eval.cost_analysis
-```
-
-Current test status:
-
-```text
-31 passed
+- Committed metrics use mock providers for reproducibility/quota; the headline real
+  numbers come from the small live smoke. A scheduled real-embedding eval would give
+  fuller retrieval numbers.
+- The distance-based refusal threshold is calibrated for the real embedding model; a
+  provider-agnostic normalized-similarity cutoff would behave consistently under mock.
+- Single-vector dense retrieval only — hybrid (BM25 + vector) and a reranker would lift
+  precision on the harder, paraphrased questions.
+- No auth/rate-limiting on the API; fine for a local service, needed before exposure.
 ```

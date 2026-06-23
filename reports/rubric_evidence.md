@@ -1,62 +1,53 @@
 # Problem 1 Rubric Evidence
 
-This file maps the submitted artifacts to the Problem 1 scoring rubric.
+Maps submitted artifacts to the Problem 1 scoring rubric. All metrics below are
+from the reproducible offline mock run (`python -m eval.run`); see
+[`README.md`](../README.md) for the honest-results discussion.
 
-## Correctness And Ingestion - 20 pts
+## Correctness And Ingestion — 20 pts
 
-Evidence:
+- `src/ingestion.py` parses PDF / HTML / Markdown / text; `src/ingest.py` is the
+  shared embed+upsert pipeline used by the API and CLI.
+- `src/storage.py` stores vector, text, embedding model + dimension, stable
+  document ID, content hash, source file, doc type, chunk index/size/overlap.
+- `tests/test_storage.py` — idempotent upsert + stale-chunk replacement.
+- `tests/test_api.py` — hermetic ingest+query on a temp DB (`mock_corpus_db`).
+- Corpus: `data/corpus/` (PDF + HTML + Markdown), provenance in `data/SOURCES.md`.
 
-- `src/ingestion.py` supports PDF, HTML, Markdown, and text files.
-- `src/storage.py` stores vectors, chunk text, embedding model, embedding dimensionality, stable document ID, content hash, source file, document type, chunk index, chunk size, and chunk overlap.
-- `tests/test_storage.py` verifies idempotent LanceDB upsert behavior and stale-chunk replacement when a document changes.
-- `data/assignment.pdf`, `data/cost_analysis_notes.html`, and `data/rag_architecture_notes.md` prove all required ingestion formats are exercised.
+## Retrieval Evaluation — 20 pts
 
-## Retrieval Evaluation - 20 pts
+- `eval/ir_metrics.py`: Recall@k, Hit Rate, MRR, nDCG@k, **Precision@k** (renamed
+  from the mislabelled `context_precision`) and order-aware **Average Precision**;
+  unit-tested in `tests/test_ir_metrics.py`.
+- `eval/test_set.json`: 26 honestly-labelled questions (23 answerable incl.
+  hard/multi-chunk + paraphrased, 3 out-of-corpus refusals), built by
+  `eval/build_test_set.py` against real chunk IDs.
+- `reports/evaluation_results.json` — **Recall@5 = 0.826 (not 1.0)**, MRR 0.592,
+  nDCG@5 0.651, Precision@5 0.165.
 
-Evidence:
+## Answer Evaluation — 20 pts
 
-- `eval/test_set.json` contains 15 fixed evaluation questions with labeled relevant chunk IDs.
-- `eval/ir_metrics.py` computes Recall@k, Hit Rate, MRR, nDCG@k, and context precision.
-- `reports/evaluation_results.json` contains per-question retrieval results and aggregate metrics.
+- `eval/llm_judge.py`: graded **1–5** faithfulness + relevance with rubric anchors;
+  the mock judge is a deterministic lexical-grounding heuristic.
+- **Discrimination proven**: `adversarial_probes` in the report and
+  `tests/test_llm_judge.py` show a *correct* answer scored 5/5 and a
+  *confidently-wrong* / *verbose-unsupported* answer scored 1/5.
+- `eval/text_metrics.py`: SQuAD-style **Exact Match** + **token-F1** vs
+  `reference_answer`; unit-tested; `mean_exact_match`/`mean_token_f1` in the summary.
+- Judge family kept ≠ generator family; rationale + raw response logged per case.
 
-Latest aggregate retrieval metrics:
+## Cost Analysis — 20 pts
 
-- Recall@5: 1.000
-- Hit Rate: 1.000
-- MRR: 0.967
-- nDCG@5: 0.959
-- Context Precision: 0.307
+- `eval/cost_analysis.py` + `reports/cost_analysis.json`: LanceDB **storage + host**
+  vs a **named, sourced** managed baseline (Pinecone serverless, pricing dated
+  2026-06-23), no unused assumption fields, chars→tokens reconciled, break-even note.
 
-## Answer Evaluation - 20 pts
+## Engineering And Clarity — 20 pts
 
-Evidence:
-
-- `eval/llm_judge.py` scores faithfulness/groundedness and answer relevance with a combined rationale-first JSON judge call.
-- `reports/evaluation_results.json` includes faithfulness, relevance, rationale, raw judge response, judge provider, and judge model per case.
-
-Latest aggregate answer metrics:
-
-- Faithfulness: 1.000
-- Answer relevance: 1.000
-
-## Cost Analysis - 20 pts
-
-Evidence:
-
-- `eval/cost_analysis.py` generates a reproducible cost analysis.
-- `reports/cost_analysis.json` includes assumptions and cost table.
-- README includes the same cost table and discussion of when to switch back to managed infrastructure.
-
-## Engineering And Clarity - 20 pts
-
-Evidence:
-
-- FastAPI HTTP service in `src/api.py`.
-- Environment-only config in `src/config.py` and `.env.example`.
-- Gemini key rotation in `src/gemini_client.py`.
-- Structured JSON telemetry in `src/logger.py`.
-- Cache-backed embeddings/generation/judging to reduce API usage.
-- Separate `JUDGE_MODEL` config so evaluation can use a cheaper model than generation when quotas are tight.
-- No-context fallback using `MAX_RETRIEVAL_DISTANCE`.
-- `README.md` includes setup, API usage, evaluation workflow, cost analysis, and discussion.
-- `tests/` currently passes with 31 tests.
+- FastAPI service (`src/api.py`) with `/health`, `/ready` (row count + embedding
+  info), `/ingest`, `/query`; structured JSON telemetry incl. cold-vs-cached.
+- Shared 429/5xx retry helper (`src/retry.py`) for Gemini key-rotation and Groq.
+- Fault-tolerant eval: per-case try/except + incremental partial-result persistence.
+- Pinned `requirements.txt`, `pyproject.toml` (ruff/black), `Makefile`,
+  `.github/workflows/ci.yml`, `Dockerfile` + `docker-compose.yml`, `render.yaml`.
+- `rm -rf db cache && pytest` is green on a clean checkout.
