@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies (pinned)
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint (ruff + black)
+        run: make lint
+
+      # Simulate a clean checkout: no pre-existing db/ or cache/, mock providers,
+      # throwaway state dirs. No secrets are needed.
+      - name: Test on a clean checkout (mock providers)
+        run: |
+          rm -rf db cache
+          make test

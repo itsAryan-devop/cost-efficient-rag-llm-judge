@@ -92,3 +92,10 @@ def get_embedding(text: str, input_type: str = "document", use_cache: bool = Tru
 
     cache[key] = embedding
     return embedding
+
+
+def is_cached(text: str, input_type: str = "document") -> bool:
+    """Whether this text's embedding is already in the disk cache (warm vs cold)."""
+    provider = settings.embedding_provider.lower()
+    model = "mock" if provider == "mock" else settings.embedding_model
+    return _cache_key(provider, model, text, input_type) in cache

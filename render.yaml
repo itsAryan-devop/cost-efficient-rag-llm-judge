@@ -1,0 +1,35 @@
+# Render.com web service blueprint. Deploy: push to a connected repo, or use the
+# Render dashboard "New + > Blueprint". Set secret env vars in the dashboard;
+# never hardcode keys here.
+services:
+  - type: web
+    name: cost-efficient-rag
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      - key: EMBEDDING_PROVIDER
+        value: gemini
+      - key: GENERATION_PROVIDER
+        value: groq
+      - key: JUDGE_PROVIDER
+        value: gemini
+      - key: DATA_ROOT
+        value: data/corpus
+      - key: DB_PATH
+        value: /var/data/lancedb
+      - key: CACHE_PATH
+        value: /var/data/diskcache
+      # Secrets — set these in the Render dashboard, not in this file.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEYS
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+    # Persist the index/cache across deploys (Render disks are paid; remove on free tier).
+    disk:
+      name: rag-data
+      mountPath: /var/data
+      sizeGB: 1
