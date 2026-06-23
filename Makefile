@@ -9,7 +9,7 @@ IMAGE ?= cost-efficient-rag
 # Part 1 paths only; Problem 2 (eval/pipeline, eval/run_*pipeline*) is a separate workstream.
 LINT_PATHS = src data/build_corpus.py \
 	eval/build_test_set.py eval/cost_analysis.py eval/export_chunks.py \
-	eval/ir_metrics.py eval/llm_judge.py eval/run.py eval/text_metrics.py
+	eval/ir_metrics.py eval/llm_judge.py eval/run.py eval/text_metrics.py eval/smoke.py
 
 # Mock everything and use throwaway state dirs so tests never touch real keys or db/.
 MOCK_ENV = EMBEDDING_PROVIDER=mock GENERATION_PROVIDER=mock JUDGE_PROVIDER=mock \
