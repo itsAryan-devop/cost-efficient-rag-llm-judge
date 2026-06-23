@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger("rag_app")
@@ -15,7 +15,7 @@ if not logger.handlers:
 
 def log_event(event: str, **fields: Any) -> None:
     payload = {
-        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "event": event,
         **fields,
     }

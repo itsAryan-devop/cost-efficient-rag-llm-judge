@@ -305,7 +305,7 @@ def print_summary(report: SuiteReport) -> None:
     print(f"  Gold agreement:     {v.gold_agreement_rate:.1%}" if v.gold_agreement_rate is not None else "  Gold agreement:     N/A")
     print(f"  Cohen's kappa:      {v.cohens_kappa:.3f}" if v.cohens_kappa is not None else "  Cohen's kappa:      N/A")
     if v.test_retest_agreement is not None:
-        print(f"  Test-retest:        {v.test_retest_agreement:.1%}  (n={v.test_retest_sample_size}; smoke check, not reliability)")
+        print(f"  Test-retest:        {v.test_retest_agreement:.1%}  (n={v.test_retest_sample_size} probes re-judged)")
     else:
         print("  Test-retest:        N/A")
     print(f"  Adversarial probes: {v.adversarial_probes_passed}/{v.adversarial_probes_total}")

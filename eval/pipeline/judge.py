@@ -73,15 +73,22 @@ def _parse_verdict(raw: str) -> JudgeVerdict:
 def _call_gemini(prompt: str, model: str) -> tuple[str, int, int]:
     """Call Gemini and return (text, prompt_tokens, completion_tokens)."""
     from google import genai
+    from google.genai import types
     keys = [k.strip() for k in pipeline_settings.gemini_api_keys.split(",") if k.strip()]
     if pipeline_settings.gemini_api_key and pipeline_settings.gemini_api_key not in keys:
         keys.append(pipeline_settings.gemini_api_key)
     if not keys:
         raise RuntimeError("GEMINI_API_KEY required for judge_provider=gemini")
     client = genai.Client(api_key=keys[0])
+    # Without an explicit config the SDK defaults to ~1.0, which made the judge
+    # non-deterministic across re-runs (test-retest was 0% as a result).
     response = client.models.generate_content(
         model=model,
         contents=f"{SYSTEM_PROMPT}\n\n{prompt}",
+        config=types.GenerateContentConfig(
+            temperature=pipeline_settings.judge_temperature,
+            response_mime_type="application/json",
+        ),
     )
     text = response.text or ""
     usage = getattr(response, "usage_metadata", None)

@@ -7,8 +7,7 @@ from pydantic import BaseModel, Field
 from .config import settings
 from .embedding import get_embedding, is_cached
 from .generation import generate_answer
-from .ingest import embed_chunks
-from .ingestion import process_documents
+from .ingestion import embed_chunks, process_documents
 from .logger import log_query
 from .storage import get_table, search, upsert_vectors
 

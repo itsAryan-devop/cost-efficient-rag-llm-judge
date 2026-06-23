@@ -12,5 +12,6 @@ extend-exclude = ["data/corpus", "reports", "db", "cache", ".venv"]
 select = ["E", "F", "W", "I", "UP", "B"]
 ignore = [
     "E501",   # line length is owned by black; long string literals are allowed
+    "UP017",  # don't push datetime.UTC alias; it's Python 3.11+ and we support 3.10
     "UP047",  # PEP 695 generic-function syntax is not required here
 ]

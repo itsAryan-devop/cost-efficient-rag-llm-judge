@@ -13,7 +13,7 @@ managed side scale with query volume and are called out separately.
 import json
 import os
 from dataclasses import asdict, dataclass
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 
 from src.config import settings
 
@@ -139,7 +139,7 @@ def break_even_note(assumptions: CostAssumptions) -> str:
 def run(output_path=None):
     assumptions, rows = estimate_rows()
     report = {
-        "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "report_date": date.today().isoformat(),
         "managed_baseline": {
             "provider": MANAGED_PROVIDER,

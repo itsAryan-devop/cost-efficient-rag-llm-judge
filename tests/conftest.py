@@ -14,7 +14,7 @@ import pytest
 import src.embedding as embedding
 import src.generation as generation
 from src.config import settings
-from src.ingest import run_ingest
+from src.ingestion import run_ingest
 
 FIXTURE_DOC = """# Fixture Notes
 

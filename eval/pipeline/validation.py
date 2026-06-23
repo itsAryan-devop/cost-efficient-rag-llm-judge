@@ -108,9 +108,14 @@ def run_validation(
         gold_rate = None
         kappa = None
 
-    # --- Test-retest consistency: re-run first probe and check agreement ---
-    retest_result = evaluate_case(BIAS_PROBES[0], audit_logger)
-    retest_agrees = retest_result.final_winner == probe_results[0].final_winner
+    # --- Test-retest consistency: re-judge ALL probes once and measure agreement.
+    # n=1 is too noisy to read as reliability evidence; n=3 still cheap but useful.
+    retest_results = [evaluate_case(probe, audit_logger) for probe in BIAS_PROBES]
+    retest_matches = sum(
+        1 for orig, retest in zip(probe_results, retest_results)
+        if orig.final_winner == retest.final_winner
+    )
+    retest_rate = retest_matches / len(BIAS_PROBES)
 
     details = []
     for pr in probe_results:
@@ -128,8 +133,8 @@ def run_validation(
         method="adversarial_probes+gold_agreement+test_retest",
         gold_agreement_rate=gold_rate,
         cohens_kappa=kappa,
-        test_retest_agreement=1.0 if retest_agrees else 0.0,
-        test_retest_sample_size=1,  # one probe re-judged once: smoke check, not a reliability estimate
+        test_retest_agreement=retest_rate,
+        test_retest_sample_size=len(BIAS_PROBES),
         adversarial_probes_passed=probes_passed,
         adversarial_probes_total=len(BIAS_PROBES),
         details=details,
