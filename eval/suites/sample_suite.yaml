@@ -1,0 +1,49 @@
+name: "RAG Quality Comparison"
+description: "Compare prompt v1 (concise) vs prompt v2 (detailed) for RAG QA"
+config_a: "Prompt v1 (concise)"
+config_b: "Prompt v2 (detailed)"
+cases:
+  - id: "case_001"
+    input: "What is LanceDB and why would you use it?"
+    context: "LanceDB is an open-source embedded vector database. It runs inside your application process, avoiding the need for a separate database server. It is well-suited for local or single-service RAG deployments."
+    reference_output: "LanceDB is an open-source embedded vector database that runs inside your app, avoiding a separate server."
+    output_a: "LanceDB is an embedded vector database. It runs in your app process and avoids needing a separate server."
+    output_b: "LanceDB is an exceptionally powerful, cutting-edge, enterprise-grade embedded vector database solution. It runs directly inside your application's process, thereby completely eliminating the need for deploying, managing, and maintaining a separate database server instance. This makes it particularly well-suited for scenarios involving local deployments or single-service RAG architectures."
+    gold_winner: "A"
+    metadata: {difficulty: "easy"}
+
+  - id: "case_002"
+    input: "How does idempotent ingestion work?"
+    context: "Idempotent ingestion uses deterministic SHA-256 hashes for document and chunk IDs. Before inserting, existing rows with the same IDs are deleted, then the new rows are inserted."
+    reference_output: "Idempotent ingestion hashes documents and chunks with SHA-256, deletes existing matching rows, then inserts the new ones."
+    output_a: "It uses SHA-256 hashes for IDs. Old rows with matching IDs are deleted before inserting new ones. This prevents duplicates."
+    output_b: "The system generates deterministic SHA-256 hashes for both document-level and chunk-level identifiers. During re-ingestion, the pipeline first removes any existing records whose IDs match the incoming data, then inserts the updated records. This delete-then-insert pattern ensures idempotency."
+    gold_winner: "Tie"
+    metadata: {difficulty: "medium"}
+
+  - id: "case_003"
+    input: "What retrieval metrics should a RAG system track?"
+    context: "Standard retrieval metrics include Recall@k, Hit Rate, MRR (Mean Reciprocal Rank), nDCG@k, and context precision."
+    reference_output: "A RAG system should track Recall@k, Hit Rate, MRR, nDCG@k, and context precision."
+    output_a: "Track Recall@k, Hit Rate, MRR, nDCG@k, and context precision."
+    output_b: "You should track many metrics including accuracy, precision, recall, F1 score, BLEU score, ROUGE score, and perplexity to get a comprehensive view."
+    gold_winner: "A"
+    metadata: {difficulty: "medium"}
+
+  - id: "case_004"
+    input: "When should you switch from an embedded vector DB to a managed one?"
+    context: "Switch to managed when you need multi-region availability, automatic backups, strict uptime SLAs, or high-concurrency scaling that exceeds what a single embedded instance can handle."
+    reference_output: "Switch when you need multi-region HA, managed backups, uptime SLAs, or high concurrency."
+    output_a: "Switch when you need multi-region availability, automatic backups, strict uptime guarantees, or high-concurrency scaling."
+    output_b: "You should always use a managed database because embedded databases are unreliable and cannot handle production workloads."
+    gold_winner: "A"
+    metadata: {difficulty: "hard"}
+
+  - id: "case_005"
+    input: "What is the no-context fallback behavior?"
+    context: "When the nearest retrieved chunk has a distance above MAX_RETRIEVAL_DISTANCE, the system skips the LLM call entirely and returns a fixed message: 'I could not find relevant context in the indexed documents to answer this question.'"
+    reference_output: "The system returns a canned refusal message and skips the LLM call when retrieval distance exceeds the threshold."
+    output_a: "If retrieval distance is too high, the system skips the LLM and returns a fixed refusal message."
+    output_b: "The system has a sophisticated fallback mechanism where it carefully evaluates the semantic distance of retrieved chunks against a configurable threshold, and when this threshold is exceeded, it gracefully degrades by returning a pre-defined response indicating insufficient context."
+    gold_winner: "Tie"
+    metadata: {difficulty: "easy"}

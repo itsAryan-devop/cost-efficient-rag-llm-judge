@@ -1,0 +1,6 @@
+case_id,verdict_ab_winner,verdict_ba_winner,final_winner,position_bias,gold_winner
+case_001,A,B,A,False,A
+case_002,B,A,B,False,Tie
+case_003,A,B,A,False,A
+case_004,A,B,A,False,A
+case_005,A,B,A,False,Tie

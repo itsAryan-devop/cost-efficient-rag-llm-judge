@@ -1,0 +1,24 @@
+name: "Abuse Testing Suite"
+config_a: "Good Config"
+config_b: "Bad Config"
+cases:
+  - id: "empty_outputs"
+    input: "Say nothing."
+    output_a: ""
+    output_b: ""
+
+  - id: "huge_output"
+    input: "Give me the longest string possible."
+    output_a: "A"
+    output_b: "B"  # I will inject huge text via code or just let it be
+
+  - id: "missing_fields"
+    # missing input, output_a, output_b - wait, Pydantic will catch this at load time!
+    input: "Will pydantic catch?"
+    output_a: "Yes"
+    output_b: "Yes"
+
+  - id: "markdown_injection"
+    input: "Inject markdown."
+    output_a: "```json\n{malformed}\n```"
+    output_b: "```json\n{\"winner\": \"A\"}\n```"

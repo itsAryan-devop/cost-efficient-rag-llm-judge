@@ -1,0 +1,719 @@
+{
+  "suite_name": "RAG Quality Comparison",
+  "created_at": "2026-06-23T02:19:03.821619Z",
+  "config_a": "Prompt v1 (concise)",
+  "config_b": "Prompt v2 (detailed)",
+  "total_cases": 5,
+  "win_rate_a": 0.8,
+  "win_rate_b": 0.2,
+  "tie_rate": 0.0,
+  "conflict_rate": 0.0,
+  "error_rate": 0.0,
+  "winner": "Prompt v1 (concise)",
+  "criterion_aggregates": [
+    {
+      "criterion": "correctness",
+      "weight": 2.0,
+      "mean_score_a": 5.0,
+      "mean_score_b": 2.8,
+      "cases_scored": 5
+    },
+    {
+      "criterion": "completeness",
+      "weight": 1.5,
+      "mean_score_a": 4.2,
+      "mean_score_b": 3.1,
+      "cases_scored": 5
+    },
+    {
+      "criterion": "faithfulness",
+      "weight": 2.0,
+      "mean_score_a": 5.0,
+      "mean_score_b": 2.6,
+      "cases_scored": 5
+    },
+    {
+      "criterion": "conciseness",
+      "weight": 1.0,
+      "mean_score_a": 5.0,
+      "mean_score_b": 2.5,
+      "cases_scored": 5
+    },
+    {
+      "criterion": "instruction_following",
+      "weight": 1.5,
+      "mean_score_a": 5.0,
+      "mean_score_b": 2.8,
+      "cases_scored": 5
+    }
+  ],
+  "weighted_score_a": 4.85,
+  "weighted_score_b": 2.769,
+  "pass_threshold": 4.0,
+  "pass_rate_a": 1.0,
+  "pass_rate_b": 0.2,
+  "bias_metrics": {
+    "position_bias_rate": 0.0,
+    "position_flip_rate": 0.0,
+    "verbosity_probe_passed": true,
+    "sycophancy_probe_passed": true,
+    "self_enhancement_warning": false,
+    "score_variance": 2.58,
+    "score_clustering_detected": false
+  },
+  "validation": {
+    "method": "adversarial_probes+gold_agreement+test_retest",
+    "gold_agreement_rate": 0.6,
+    "cohens_kappa": 0.23076923076923075,
+    "test_retest_agreement": 0.0,
+    "test_retest_sample_size": 1,
+    "adversarial_probes_passed": 3,
+    "adversarial_probes_total": 3,
+    "details": [
+      {
+        "probe_id": "probe_verbosity",
+        "probe_type": "verbosity",
+        "gold_winner": "A",
+        "judge_winner": "A",
+        "passed": true,
+        "position_bias": false
+      },
+      {
+        "probe_id": "probe_sycophancy",
+        "probe_type": "sycophancy",
+        "gold_winner": "A",
+        "judge_winner": "A",
+        "passed": true,
+        "position_bias": false
+      },
+      {
+        "probe_id": "probe_score_clustering",
+        "probe_type": "score_clustering",
+        "gold_winner": "A",
+        "judge_winner": "A",
+        "passed": true,
+        "position_bias": false
+      }
+    ]
+  },
+  "judge_provider": "groq",
+  "judge_model": "llama-3.3-70b-versatile",
+  "generator_provider": "gemini",
+  "generator_model": "gemini-2.5-flash",
+  "total_judge_calls": 26,
+  "total_prompt_tokens": 15602,
+  "total_completion_tokens": 8327,
+  "total_cost": 0.01578351,
+  "results": [
+    {
+      "case_id": "case_001",
+      "verdict_ab": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes LanceDB as an embedded vector database that runs inside the app process and avoids needing a separate server, which is supported by the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 3,
+            "rationale": "The response partially addresses the question by describing what LanceDB is but does not fully explain why you would use it."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and avoids hallucination or unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is appropriately concise and directly answers the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions and constraints given in the prompt by providing a factual answer without elaborating beyond the context."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 3,
+            "rationale": "While the response describes LanceDB and its benefits, it introduces unsupported claims about being 'exceptionally powerful, cutting-edge, enterprise-grade', which are not verifiable from the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by describing LanceDB and explaining its suitability for local or single-service RAG deployments."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 3,
+            "rationale": "The response is partially grounded in the context but introduces hallucinations or unsupported claims about LanceDB's capabilities and grade."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 1,
+            "rationale": "The response is not concise, containing unnecessary padding and verbose descriptions that add no factual information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 3,
+            "rationale": "The response partially follows the instructions by answering the question but fails to avoid introducing unsupported claims and verbose language."
+          }
+        ],
+        "rationale": "Assistant A provides a concise and factually accurate description of LanceDB, adhering closely to the context without introducing unsupported claims. Assistant B, while providing more detail on the use cases, introduces unsubstantiated claims and uses overly verbose language, reducing its overall score. Given the emphasis on correctness, faithfulness, and conciseness, Assistant A is the winner.",
+        "winner": "A"
+      },
+      "verdict_ba": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 3,
+            "rationale": "Assistant 1's response contains some accurate information about LanceDB, but it also includes unsupported claims like being 'exceptionally powerful' and 'cutting-edge', which are not verifiable from the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 4,
+            "rationale": "Assistant 1 provides a fairly complete description of LanceDB, including its suitability for local or single-service RAG deployments, but it does not fully address why one would use it beyond the database's characteristics."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 2,
+            "rationale": "Assistant 1's response includes hallucinations and unsupported claims, such as describing LanceDB as 'enterprise-grade', which is not grounded in the provided context."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 2,
+            "rationale": "Assistant 1's response is verbose and includes unnecessary padding, such as the use of 'exceptionally powerful' and 'cutting-edge', which adds no factual information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 3,
+            "rationale": "Assistant 1 attempts to follow the instructions by providing information about LanceDB, but it includes extraneous language that does not directly address the question."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "Assistant 2's response is factually accurate and correct, stating that LanceDB is an embedded vector database that runs in the app process and avoids needing a separate server, which is supported by the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 3,
+            "rationale": "Assistant 2 provides a basic description of LanceDB but lacks detail on its suitability for specific deployments or why one would use it, making the response somewhat incomplete."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "Assistant 2's response is entirely grounded in the provided context, avoiding any hallucination or unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "Assistant 2's response is appropriately concise, directly addressing the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "Assistant 2 follows the instructions by providing a straightforward and relevant answer to the question about LanceDB."
+          }
+        ],
+        "rationale": "Assistant 2 is more faithful to the context and concise in its response, directly addressing the question without adding unsupported claims or unnecessary language. While Assistant 1 provides more detail, its inclusion of hallucinations and lack of conciseness detract from its overall quality. Therefore, Assistant 2 is the winner due to its accuracy, faithfulness to the context, and conciseness.",
+        "winner": "B"
+      },
+      "final_winner": "A",
+      "position_bias_detected": false,
+      "gold_winner": "A"
+    },
+    {
+      "case_id": "case_002",
+      "verdict_ab": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes idempotent ingestion using SHA-256 hashes and deleting existing rows before inserting new ones, aligning with the provided context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 3,
+            "rationale": "While the response covers the key aspects of idempotent ingestion, it lacks detail about the deterministic nature of the hashes and the specific levels (document and chunk) at which they are applied."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the context and does not introduce unsupported claims or hallucinations, sticking to the facts about idempotent ingestion."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is appropriately concise, directly addressing the question without unnecessary padding or verbosity."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions by providing a clear and relevant answer to the question about idempotent ingestion."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes the process of idempotent ingestion, including the use of deterministic SHA-256 hashes for document and chunk identifiers and the delete-then-insert pattern."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question, covering the key aspects of idempotent ingestion, including the levels at which hashes are applied and the mechanism ensuring idempotency."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is well-grounded in the provided context, accurately reflecting the details of idempotent ingestion without introducing unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 3,
+            "rationale": "While the response is clear and relevant, it is somewhat verbose, using more words than necessary to convey the information about idempotent ingestion."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response adheres to the instructions, providing a detailed and accurate answer to the question about idempotent ingestion."
+          }
+        ],
+        "rationale": "Assistant 2 provides a more comprehensive answer that fully addresses the question, including specific details about the application of SHA-256 hashes at both the document and chunk levels. Although Assistant 1's response is concise and accurate, it lacks the completeness and detail provided by Assistant 2. Therefore, Assistant 2 is considered the better response due to its higher scores in completeness and its ability to provide a more detailed explanation without introducing inaccuracies.",
+        "winner": "B"
+      },
+      "verdict_ba": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes idempotent ingestion using SHA-256 hashes and the delete-then-insert pattern."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question, covering the key aspects of idempotent ingestion."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context, accurately reflecting the described process without introducing unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 4,
+            "rationale": "While the response is clear and informative, it could be slightly more concise without losing essential details."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response adheres to the instructions, focusing on the substance and factual quality of the answer."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response correctly identifies the use of SHA-256 hashes and the deletion of old rows before inserting new ones."
+          },
+          {
+            "criterion": "completeness",
+            "score": 3,
+            "rationale": "The response partially addresses the question, lacking detail about the process but correctly identifying key elements."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is faithful to the context, avoiding hallucination and focusing on verifiable information."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is concise, directly addressing the question without unnecessary detail."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions, prioritizing factual accuracy and conciseness."
+          }
+        ],
+        "rationale": "Assistant 1 provides a more comprehensive explanation of idempotent ingestion, covering all key aspects of the process. While Assistant 2 is concise and accurate, it lacks the detail provided by Assistant 1, which better addresses the question. Both assistants demonstrate strong faithfulness to the context and follow the instructions well. However, the slightly higher completeness and correctness of Assistant 1's response, despite being less concise, make it the better choice.",
+        "winner": "A"
+      },
+      "final_winner": "B",
+      "position_bias_detected": false,
+      "gold_winner": "Tie"
+    },
+    {
+      "case_id": "case_003",
+      "verdict_ab": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately lists the retrieval metrics that a RAG system should track, as supported by the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by listing all the relevant metrics."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and only mentions metrics that are supported by it."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is concise and directly answers the question without unnecessary information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions by providing the relevant metrics for a RAG system."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 1,
+            "rationale": "The response lists metrics that are not relevant to the context or the question about RAG systems."
+          },
+          {
+            "criterion": "completeness",
+            "score": 1,
+            "rationale": "The response does not address the question accurately, as it mentions unrelated metrics."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 1,
+            "rationale": "The response is not grounded in the provided context and introduces unsupported claims about relevant metrics."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 1,
+            "rationale": "The response includes unnecessary and irrelevant information, making it verbose."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 1,
+            "rationale": "The response does not follow the instructions, as it provides a list of metrics that are not specific to RAG systems."
+          }
+        ],
+        "rationale": "Assistant 1 provides a correct, complete, faithful, concise, and instruction-following response by accurately listing the retrieval metrics for a RAG system as supported by the context. In contrast, Assistant 2 fails to meet any of these criteria by providing a list of unrelated metrics, thus not following the instructions or the context provided.",
+        "winner": "A"
+      },
+      "verdict_ba": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 1,
+            "rationale": "The response mentions many metrics that are not relevant to the context of retrieval metrics for a RAG system."
+          },
+          {
+            "criterion": "completeness",
+            "score": 1,
+            "rationale": "The response does not fully address the question as it introduces many unrelated metrics."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 1,
+            "rationale": "The response is not grounded in the provided context and introduces unsupported claims about relevant metrics."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 1,
+            "rationale": "The response is not concise as it includes a list of unnecessary and unrelated metrics."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 1,
+            "rationale": "The response does not follow the instructions as it does not provide the correct retrieval metrics for a RAG system."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately lists the retrieval metrics that should be tracked for a RAG system as per the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by listing all the relevant retrieval metrics."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and only mentions the metrics supported by the context."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is concise and only includes the necessary information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions by providing the correct retrieval metrics for a RAG system."
+          }
+        ],
+        "rationale": "Assistant 2 provides a more accurate and relevant response that is grounded in the context, whereas Assistant 1 introduces many unrelated metrics and does not follow the instructions.",
+        "winner": "B"
+      },
+      "final_winner": "A",
+      "position_bias_detected": false,
+      "gold_winner": "A"
+    },
+    {
+      "case_id": "case_004",
+      "verdict_ab": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately reflects the context, mentioning multi-region availability, automatic backups, strict uptime guarantees, and high-concurrency scaling as reasons to switch to a managed vector DB."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by covering all the important aspects mentioned in the context."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and avoids hallucination or unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is appropriately concise, directly addressing the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions and constraints given in the prompt, providing a relevant and accurate answer."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 1,
+            "rationale": "The response makes an unsupported claim that embedded databases are unreliable and cannot handle production workloads, which is not mentioned in the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 1,
+            "rationale": "The response fails to address the question by not providing specific conditions under which to switch to a managed vector DB."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 1,
+            "rationale": "The response is not grounded in the provided context and makes an unsupported claim about embedded databases."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 3,
+            "rationale": "The response is somewhat concise but lacks relevant information to support its claim."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 1,
+            "rationale": "The response does not follow the instructions and constraints given in the prompt, as it provides an inaccurate and unsupported answer."
+          }
+        ],
+        "rationale": "Assistant 1 provides an accurate and complete response that is grounded in the context, while Assistant 2 makes an unsupported claim and fails to address the question. Therefore, Assistant 1 is the winner.",
+        "winner": "A"
+      },
+      "verdict_ba": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 1,
+            "rationale": "The response claims embedded databases are unreliable and cannot handle production workloads, which is not supported by the context and is factually incorrect."
+          },
+          {
+            "criterion": "completeness",
+            "score": 1,
+            "rationale": "The response does not address the question of when to switch from an embedded vector DB to a managed one, instead making an absolute statement about always using a managed database."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 1,
+            "rationale": "The response is not grounded in the provided context and makes unsupported claims about embedded databases."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is concise, but this is due to its lack of relevant content rather than effective communication of the necessary information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 1,
+            "rationale": "The response does not follow the instructions given in the prompt, as it fails to provide a condition-based answer for switching to a managed database."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately reflects the conditions under which one should switch from an embedded vector DB to a managed one, as supported by the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by listing all the important aspects that necessitate switching to a managed database."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and avoids hallucination or unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is appropriately concise, directly addressing the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions given in the prompt by providing a condition-based answer for switching to a managed database."
+          }
+        ],
+        "rationale": "Assistant 2 provides a response that is factually accurate, complete, faithful to the context, concise, and follows the instructions. In contrast, Assistant 1's response is incorrect, incomplete, unfaithful to the context, and does not follow the instructions. Therefore, Assistant 2 is the clear winner.",
+        "winner": "B"
+      },
+      "final_winner": "A",
+      "position_bias_detected": false,
+      "gold_winner": "A"
+    },
+    {
+      "case_id": "case_005",
+      "verdict_ab": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes the no-context fallback behavior as skipping the LLM call and returning a fixed refusal message when the retrieval distance exceeds the threshold."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by providing the essential details of the fallback behavior."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context and avoids hallucination or unsupported claims."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is appropriately concise and directly answers the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions and constraints given in the prompt by providing a clear and accurate description of the no-context fallback behavior."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "The response accurately describes the no-context fallback behavior as returning a pre-defined response when the retrieval distance exceeds the threshold."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by providing the essential details of the fallback behavior, although it uses more complex language."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "The response is grounded in the provided context but uses more elaborate language that may be considered slightly less faithful to the original context."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 3,
+            "rationale": "The response is less concise than necessary, using more complex and verbose language that adds no significant information."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "The response follows the instructions and constraints given in the prompt by providing a description of the no-context fallback behavior, albeit in a more elaborate manner."
+          }
+        ],
+        "rationale": "Both assistants provide accurate and complete descriptions of the no-context fallback behavior. However, Assistant 1 is more concise and directly answers the question without unnecessary complexity, making it a slightly better response overall.",
+        "winner": "A"
+      },
+      "verdict_ba": {
+        "criteria_scores_a": [
+          {
+            "criterion": "correctness",
+            "score": 3,
+            "rationale": "Assistant 1's response is partially correct as it mentions a fallback mechanism and a threshold, but it introduces unnecessary complexity and terminology not present in the context."
+          },
+          {
+            "criterion": "completeness",
+            "score": 3,
+            "rationale": "The response partially addresses the question by mentioning a fallback mechanism but does not fully capture the simplicity of the no-context fallback behavior as described in the context."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 2,
+            "rationale": "Assistant 1's response is not entirely faithful to the context, as it introduces terms like 'sophisticated fallback mechanism' and 'semantic distance' that are not supported by the provided information."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 2,
+            "rationale": "The response is not concise, using more words than necessary to convey the idea, and includes filler terms like 'carefully evaluates' and 'gracefully degrades'."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 3,
+            "rationale": "Assistant 1 attempts to follow the instructions but overcomplicates the response with unnecessary details not requested in the prompt."
+          }
+        ],
+        "criteria_scores_b": [
+          {
+            "criterion": "correctness",
+            "score": 5,
+            "rationale": "Assistant 2's response is factually accurate, correctly stating that when the retrieval distance is too high, the system skips the LLM call and returns a fixed refusal message."
+          },
+          {
+            "criterion": "completeness",
+            "score": 5,
+            "rationale": "The response fully addresses the question by directly stating the no-context fallback behavior in a straightforward manner."
+          },
+          {
+            "criterion": "faithfulness",
+            "score": 5,
+            "rationale": "Assistant 2's response is entirely faithful to the context, directly reflecting the information provided without introducing unsupported claims or hallucinations."
+          },
+          {
+            "criterion": "conciseness",
+            "score": 5,
+            "rationale": "The response is concise, directly answering the question without unnecessary padding or filler."
+          },
+          {
+            "criterion": "instruction_following",
+            "score": 5,
+            "rationale": "Assistant 2 perfectly follows the instructions by providing a straightforward and accurate answer to the question without introducing unnecessary complexity."
+          }
+        ],
+        "rationale": "Assistant 2 provides a more accurate, complete, faithful, concise, and instruction-following response compared to Assistant 1. Assistant 1's response, while attempting to address the question, introduces unnecessary complexity and terminology not supported by the context, making it less faithful and concise. In contrast, Assistant 2's response directly and accurately reflects the information provided in the context, making it the superior answer.",
+        "winner": "B"
+      },
+      "final_winner": "A",
+      "position_bias_detected": false,
+      "gold_winner": "Tie"
+    }
+  ]
+}
