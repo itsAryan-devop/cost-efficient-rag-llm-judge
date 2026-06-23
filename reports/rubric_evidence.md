@@ -25,14 +25,16 @@ Evidence:
 - `tests/test_ir_metrics.py` unit-tests metric calculations.
 - `reports/evaluation_results.json` contains per-question retrieved IDs and aggregate retrieval metrics.
 
-Latest offline aggregate retrieval metrics:
+Latest committed (real-provider) aggregate retrieval metrics:
 
-- Recall@5: 0.826
-- Hit Rate: 0.826
-- MRR: 0.592
-- nDCG@5: 0.651
-- Precision@5: 0.165
-- Average Precision: 0.592
+- Recall@5: 1.000
+- Hit Rate: 1.000
+- MRR: 0.928
+- nDCG@5: 0.946
+- Precision@5: 0.200
+- Average Precision: 0.928
+
+Offline mock-provider baseline (for CI reproducibility) gives Recall@5 = 0.826.
 
 ## Answer Evaluation - 20 pts
 
