@@ -189,6 +189,25 @@ that 1–2 grounded answers are judged high, recording real cold latency to
 `reports/smoke_results.json`. It is **provided but not executed in this submission to
 preserve API quota** (and skips automatically if no keys are configured).
 
+## Problem 2 — LLM-as-Judge pipeline
+
+A separate workstream in `eval/pipeline/` provides an A/B comparison harness with
+Pydantic-validated suites, structured `JudgeVerdict`s with retry + JSON re-prompt,
+full JSONL audit log (prompt, raw response, tokens, cost, latency), pairwise
+**position-swap debiasing**, a 5-criterion **weighted rubric** (used — not
+decorative), adversarial **verbosity/sycophancy** probes with gold winners,
+Cohen's kappa vs gold, and a self-enhancement-bias warning when judge family ==
+generator family.
+
+Run it: `python -m eval.run_pipeline --suite eval/suites/sample_suite.yaml`
+
+Committed result (Groq judge, llama-3.3-70b; generator = gemini family; suite =
+RAG Quality Comparison, 5 cases): **winner = Prompt v1 (concise)**, win rate
+80 / 20, weighted score 4.85 vs 2.77, pass rate 100% vs 20%, position-bias /
+position-flip both 0%, verbosity + sycophancy probes both PASSED, gold agreement
+60% (κ=0.231). Full report in `reports/p2_evaluation_report.json`; per-call
+audit in `reports/p2_audit_log.jsonl`; CSV summary in `reports/p2_results.csv`.
+
 ## Limitations / what I'd do with more time
 
 - Committed metrics use mock providers for reproducibility/quota; the headline real
