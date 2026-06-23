@@ -25,7 +25,7 @@ import os
 import re
 import time
 import traceback
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from eval.ir_metrics import (
     average_precision,
@@ -351,7 +351,7 @@ def run_evaluation(test_set_path="eval/test_set.json", output_path: str | None =
 
         # Persist partial results after every case so a mid-run failure is never lost.
         report = {
-            "created_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+            "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "summary": _aggregate(results, probes),
             "results": results,
             "adversarial_probes": probes,

@@ -28,7 +28,7 @@ test:
 	$(MOCK_ENV) $(PYTHON) -m pytest -q
 
 ingest:
-	DATA_ROOT=$(DATA_ROOT) $(PYTHON) -m src.ingest
+	DATA_ROOT=$(DATA_ROOT) $(PYTHON) -m src.ingestion
 
 eval:
 	DATA_ROOT=$(DATA_ROOT) $(PYTHON) -m eval.run

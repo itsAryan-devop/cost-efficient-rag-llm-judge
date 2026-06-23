@@ -140,3 +140,37 @@ def process_documents(data_dir: str) -> list[dict[str, Any]]:
                 print(f"Error processing {filepath}: {e}")
 
     return chunks_data
+
+
+# --------------------------------------------------------------------------- #
+# End-to-end pipeline: parse -> embed -> upsert.
+# (Kept in the same module so the public ingest surface is one file.)
+# --------------------------------------------------------------------------- #
+def embed_chunks(chunks: list[dict]) -> list[dict]:
+    from .embedding import get_embedding
+
+    for chunk in chunks:
+        chunk["vector"] = get_embedding(chunk["text"], input_type="document")
+        chunk["embedding_model"] = (
+            "mock" if settings.embedding_provider.lower() == "mock" else settings.embedding_model
+        )
+        chunk["embedding_dimension"] = settings.embedding_dimension
+    return chunks
+
+
+def run_ingest(data_dir: str | None = None) -> dict:
+    """Parse, chunk, embed and upsert every supported document under ``data_dir``."""
+    from .storage import upsert_vectors
+
+    data_dir = data_dir or settings.data_root
+    chunks = process_documents(data_dir)
+    if not chunks:
+        return {"status": "success", "message": "No documents found or processed.", "chunks_processed": 0}
+
+    embed_chunks(chunks)
+    upsert_vectors(chunks)
+    return {"status": "success", "chunks_processed": len(chunks)}
+
+
+if __name__ == "__main__":
+    print(run_ingest())

@@ -208,6 +208,19 @@ position-flip both 0%, verbosity + sycophancy probes both PASSED, gold agreement
 60% (κ=0.231). Full report in `reports/p2_evaluation_report.json`; per-call
 audit in `reports/p2_audit_log.jsonl`; CSV summary in `reports/p2_results.csv`.
 
+A few details worth flagging:
+
+- **Gemini judge temperature**: `_call_gemini` now passes
+  `GenerateContentConfig(temperature=judge_temperature)`. Without it the SDK
+  defaults to ~1.0 — that non-determinism is exactly why the committed
+  test-retest was 0% on the prior run.
+- **Test-retest n**: code now re-judges **all 3 bias probes** (n=3) instead of
+  just one. The committed JSON shows `test_retest_sample_size: 1` because the
+  attempted Gemini re-run hit daily quota (429); the n=3 path will populate on
+  the next clean run.
+- **Python**: pipeline supports Python 3.10+ (`datetime.now(timezone.utc)`,
+  not `datetime.UTC` which is 3.11+).
+
 ## Limitations / what I'd do with more time
 
 - Committed metrics use mock providers for reproducibility/quota; the headline real

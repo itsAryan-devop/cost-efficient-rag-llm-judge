@@ -45,7 +45,7 @@ def main() -> None:
     from eval.run import _judge_context
     from src.embedding import get_embedding
     from src.generation import generate_answer
-    from src.ingest import run_ingest
+    from src.ingestion import run_ingest
     from src.storage import search
 
     run_ingest(settings.data_root)  # real embeddings into the smoke DB
