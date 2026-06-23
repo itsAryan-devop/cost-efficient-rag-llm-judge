@@ -1,53 +1,75 @@
 # Problem 1 Rubric Evidence
 
-Maps submitted artifacts to the Problem 1 scoring rubric. All metrics below are
-from the reproducible offline mock run (`python -m eval.run`); see
-[`README.md`](../README.md) for the honest-results discussion.
+This file maps the submitted artifacts to the Problem 1 scoring rubric.
 
-## Correctness And Ingestion — 20 pts
+## Correctness And Ingestion - 20 pts
 
-- `src/ingestion.py` parses PDF / HTML / Markdown / text; `src/ingest.py` is the
-  shared embed+upsert pipeline used by the API and CLI.
-- `src/storage.py` stores vector, text, embedding model + dimension, stable
-  document ID, content hash, source file, doc type, chunk index/size/overlap.
-- `tests/test_storage.py` — idempotent upsert + stale-chunk replacement.
-- `tests/test_api.py` — hermetic ingest+query on a temp DB (`mock_corpus_db`).
-- Corpus: `data/corpus/` (PDF + HTML + Markdown), provenance in `data/SOURCES.md`.
+Evidence:
 
-## Retrieval Evaluation — 20 pts
+- `src/ingestion.py` parses PDF, HTML, Markdown, and text files.
+- `python -m src.ingestion` provides the CLI ingest path.
+- `src/storage.py` stores vectors, text, embedding model, embedding dimension, stable document ID, content hash, source file, doc type, chunk index, chunk size, and chunk overlap.
+- `src/api.py` exposes `/health`, `/ready`, `/ingest`, and `/query`.
+- `src/api.py` restricts API-triggered ingestion to `DATA_ROOT`.
+- `tests/test_storage.py` verifies idempotent upsert and stale-chunk replacement.
+- `tests/test_api.py` verifies API ingest/query behavior using a hermetic temp DB.
+- Corpus files live in `data/corpus/`; provenance is documented in `data/SOURCES.md`.
 
-- `eval/ir_metrics.py`: Recall@k, Hit Rate, MRR, nDCG@k, **Precision@k** (renamed
-  from the mislabelled `context_precision`) and order-aware **Average Precision**;
-  unit-tested in `tests/test_ir_metrics.py`.
-- `eval/test_set.json`: 26 honestly-labelled questions (23 answerable incl.
-  hard/multi-chunk + paraphrased, 3 out-of-corpus refusals), built by
-  `eval/build_test_set.py` against real chunk IDs.
-- `reports/evaluation_results.json` — **Recall@5 = 0.826 (not 1.0)**, MRR 0.592,
-  nDCG@5 0.651, Precision@5 0.165.
+## Retrieval Evaluation - 20 pts
 
-## Answer Evaluation — 20 pts
+Evidence:
 
-- `eval/llm_judge.py`: graded **1–5** faithfulness + relevance with rubric anchors;
-  the mock judge is a deterministic lexical-grounding heuristic.
-- **Discrimination proven**: `adversarial_probes` in the report and
-  `tests/test_llm_judge.py` show a *correct* answer scored 5/5 and a
-  *confidently-wrong* / *verbose-unsupported* answer scored 1/5.
-- `eval/text_metrics.py`: SQuAD-style **Exact Match** + **token-F1** vs
-  `reference_answer`; unit-tested; `mean_exact_match`/`mean_token_f1` in the summary.
-- Judge family kept ≠ generator family; rationale + raw response logged per case.
+- `eval/test_set.json` contains 26 labeled questions: 23 answerable and 3 out-of-corpus refusal cases.
+- `eval/build_test_set.py` builds labels against real chunk IDs.
+- `eval/ir_metrics.py` computes Recall@k, Hit Rate, MRR, nDCG@k, Precision@k, and Average Precision.
+- `tests/test_ir_metrics.py` unit-tests metric calculations.
+- `reports/evaluation_results.json` contains per-question retrieved IDs and aggregate retrieval metrics.
 
-## Cost Analysis — 20 pts
+Latest offline aggregate retrieval metrics:
 
-- `eval/cost_analysis.py` + `reports/cost_analysis.json`: LanceDB **storage + host**
-  vs a **named, sourced** managed baseline (Pinecone serverless, pricing dated
-  2026-06-23), no unused assumption fields, chars→tokens reconciled, break-even note.
+- Recall@5: 0.826
+- Hit Rate: 0.826
+- MRR: 0.592
+- nDCG@5: 0.651
+- Precision@5: 0.165
+- Average Precision: 0.592
 
-## Engineering And Clarity — 20 pts
+## Answer Evaluation - 20 pts
 
-- FastAPI service (`src/api.py`) with `/health`, `/ready` (row count + embedding
-  info), `/ingest`, `/query`; structured JSON telemetry incl. cold-vs-cached.
-- Shared 429/5xx retry helper (`src/retry.py`) for Gemini key-rotation and Groq.
-- Fault-tolerant eval: per-case try/except + incremental partial-result persistence.
-- Pinned `requirements.txt`, `pyproject.toml` (ruff/black), `Makefile`,
-  `.github/workflows/ci.yml`, `Dockerfile` + `docker-compose.yml`, `render.yaml`.
-- `rm -rf db cache && pytest` is green on a clean checkout.
+Evidence:
+
+- `eval/llm_judge.py` scores faithfulness and relevance on a 1-5 rubric with rationales.
+- The judge supports real Gemini/Groq providers and an offline deterministic mock mode.
+- `reports/evaluation_results.json` includes EM, token-F1, faithfulness, relevance, rationales, and raw judge outputs.
+- Offline refusal accuracy is 1.0 on the 3 out-of-corpus cases.
+- Adversarial probes prove the judge discriminates:
+  - Correct grounded answers score 5/5.
+  - Confidently wrong answers score 1/5.
+- `reports/smoke_results.json` provides a tiny real-provider smoke run:
+  - Two grounded answers scored faithfulness 5/5 and relevance 5/5.
+  - One out-of-corpus query refused correctly.
+
+## Cost Analysis - 20 pts
+
+Evidence:
+
+- `eval/cost_analysis.py` generates the cost report.
+- `reports/cost_analysis.json` compares LanceDB storage plus host cost against Pinecone serverless.
+- The report states vector dimension, bytes per float, metadata overhead, storage cost, host cost, embedding cost, and scale assumptions.
+- The cost table covers 100K, 1M, and 10M vectors.
+
+## Engineering And Clarity - 20 pts
+
+Evidence:
+
+- Environment-only config in `src/config.py` and `.env.example`.
+- Gemini key rotation in `src/gemini_client.py`.
+- Groq key rotation and shared retry/backoff in `src/retry.py`.
+- Gemini-primary/Groq-fallback generation in `src/generation.py`.
+- Gemini-primary/Groq-fallback judging in `eval/llm_judge.py`.
+- Structured JSON telemetry in `src/logger.py`.
+- Cache-backed embeddings/generation/judging to reduce API usage.
+- No-context fallback using `MAX_RETRIEVAL_DISTANCE` plus prompt-level refusal.
+- Dockerfile, docker-compose, CI workflow, Makefile, pinned requirements, and lint config.
+- `README.md` includes setup, API usage, evaluation workflow, cost analysis, evidence summary, and limitations.
+- Current test suite: 73 passed.

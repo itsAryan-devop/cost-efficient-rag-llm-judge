@@ -8,6 +8,8 @@ class PipelineSettings(BaseSettings):
     # Judge config
     judge_provider: str = Field(default="gemini", description="gemini, groq, openai, or mock")
     judge_model: str = Field(default="gemini-2.5-flash")
+    judge_fallback_provider: str = Field(default="groq", description="Fallback judge provider; set to none to disable")
+    judge_fallback_model: str = Field(default="llama-3.3-70b-versatile")
 
     # Generator config (what produced the outputs being judged)
     generator_provider: str = Field(default="groq")
@@ -17,6 +19,7 @@ class PipelineSettings(BaseSettings):
     gemini_api_key: str = ""
     gemini_api_keys: str = ""
     groq_api_key: str = ""
+    groq_api_keys: str = ""  # comma/semicolon/newline-separated rotation pool
     openai_api_key: str = ""
     openrouter_api_key: str = ""
 

@@ -1,6 +1,7 @@
 import json
 import pytest
-from eval.pipeline.judge import _extract_json, _parse_verdict
+from eval.pipeline.config import pipeline_settings
+from eval.pipeline.judge import _dispatch_call, _extract_json, _parse_verdict
 from eval.pipeline.schemas import JudgeVerdict
 
 
@@ -49,3 +50,24 @@ def test_parse_verdict_valid():
 def test_parse_verdict_invalid_json_raises():
     with pytest.raises((ValueError, json.JSONDecodeError, Exception)):
         _parse_verdict("this is not json")
+
+
+class RateLimitError(Exception):
+    status_code = 429
+
+
+def test_dispatch_call_falls_back_from_gemini_to_groq(monkeypatch):
+    monkeypatch.setattr(pipeline_settings, "judge_provider", "gemini")
+    monkeypatch.setattr(pipeline_settings, "judge_model", "gemini-test")
+    monkeypatch.setattr(pipeline_settings, "judge_fallback_provider", "groq")
+    monkeypatch.setattr(pipeline_settings, "judge_fallback_model", "groq-test")
+    monkeypatch.setattr("eval.pipeline.judge._call_gemini", lambda *_args: (_ for _ in ()).throw(RateLimitError()))
+    monkeypatch.setattr("eval.pipeline.judge._call_groq", lambda *_args: (_make_valid_json(), 10, 20))
+
+    raw, prompt_tokens, completion_tokens, provider, model = _dispatch_call("prompt", "a", "b")
+
+    assert json.loads(raw)["winner"] == "A"
+    assert prompt_tokens == 10
+    assert completion_tokens == 20
+    assert provider == "groq"
+    assert model == "groq-test"

@@ -6,7 +6,8 @@ from groq import Groq
 from .config import settings
 from .embedding import cache
 from .gemini_client import call_with_gemini_key
-from .retry import retry_on_transient
+from .logger import log_event
+from .retry import ROTATABLE_STATUS_CODES, call_with_key_rotation, split_keys, status_code
 
 NO_CONTEXT_MESSAGE = "I could not find relevant context in the indexed documents to answer this question."
 
@@ -48,12 +49,21 @@ def _gemini_generate(prompt: str) -> GenerationResult:
     )
 
 
+def _groq_keys() -> list[str]:
+    keys = split_keys(settings.groq_api_keys)
+    if settings.groq_api_key and settings.groq_api_key not in keys:
+        keys.append(settings.groq_api_key)
+    return keys
+
+
 def _groq_generate(prompt: str) -> GenerationResult:
-    if not settings.groq_api_key:
-        raise RuntimeError("GROQ_API_KEY is required when GENERATION_PROVIDER=groq.")
-    client = Groq(api_key=settings.groq_api_key)
-    response = retry_on_transient(
-        lambda: client.chat.completions.create(
+    keys = _groq_keys()
+    if not keys:
+        raise RuntimeError("GROQ_API_KEY (or GROQ_API_KEYS) is required when GENERATION_PROVIDER=groq.")
+    response = call_with_key_rotation(
+        keys,
+        make_client=lambda key: Groq(api_key=key),
+        operation=lambda client: client.chat.completions.create(
             model=settings.groq_model,
             messages=[
                 {"role": "system", "content": "You answer only from provided context and cite chunk IDs."},
@@ -71,6 +81,33 @@ def _groq_generate(prompt: str) -> GenerationResult:
         provider="groq",
         model=settings.groq_model,
     )
+
+
+def _provider_model(provider: str) -> str:
+    return settings.groq_model if provider == "groq" else settings.generation_model
+
+
+def _generate_with_provider(provider: str, prompt: str) -> GenerationResult:
+    if provider == "mock":
+        return GenerationResult(
+            answer="",
+            provider="mock",
+            model="mock",
+        )
+    if provider == "gemini":
+        return _gemini_generate(prompt)
+    if provider == "groq":
+        return _groq_generate(prompt)
+    raise ValueError(f"Unsupported generation provider: {provider}")
+
+
+def _generation_provider_order() -> list[str]:
+    primary = settings.generation_provider.lower()
+    fallback = settings.generation_fallback_provider.lower().strip()
+    providers = [primary]
+    if fallback and fallback != primary and fallback != "none":
+        providers.append(fallback)
+    return providers
 
 
 def has_relevant_context(retrieved_chunks: list[dict]) -> bool:
@@ -118,7 +155,7 @@ def generate_answer(query: str, retrieved_chunks: list[dict], use_cache: bool = 
     cold (the result is still cached for later warm calls).
     """
     provider = settings.generation_provider.lower()
-    model = settings.groq_model if provider == "groq" else settings.generation_model
+    model = _provider_model(provider)
 
     if not has_relevant_context(retrieved_chunks):
         return GenerationResult(
@@ -129,22 +166,41 @@ def generate_answer(query: str, retrieved_chunks: list[dict], use_cache: bool = 
         )
 
     prompt = build_prompt(query, retrieved_chunks)
-    key = _cache_key(prompt, provider, model)
-    if use_cache and key in cache:
-        return GenerationResult(**cache[key])
-
     if provider == "mock":
         result = GenerationResult(
             answer=f"Mock answer generated from {len(retrieved_chunks)} retrieved chunks [{retrieved_chunks[0]['id']}].",
             provider="mock",
             model="mock",
         )
-    elif provider == "gemini":
-        result = _gemini_generate(prompt)
-    elif provider == "groq":
-        result = _groq_generate(prompt)
-    else:
-        raise ValueError(f"Unsupported generation provider: {settings.generation_provider}")
+        cache[_cache_key(prompt, result.provider, result.model)] = result.__dict__
+        return result
 
-    cache[key] = result.__dict__
-    return result
+    last_error: Exception | None = None
+    for candidate in _generation_provider_order():
+        candidate_model = _provider_model(candidate)
+        key = _cache_key(prompt, candidate, candidate_model)
+        if use_cache and key in cache:
+            return GenerationResult(**cache[key])
+
+        try:
+            result = _generate_with_provider(candidate, prompt)
+            cache[_cache_key(prompt, result.provider, result.model)] = result.__dict__
+            return result
+        except Exception as exc:  # noqa: BLE001 - fallback is based on provider status code
+            last_error = exc
+            code = status_code(exc)
+            can_fallback = code in ROTATABLE_STATUS_CODES and candidate != _generation_provider_order()[-1]
+            log_event(
+                "generation_provider_failed",
+                provider=candidate,
+                model=candidate_model,
+                status_code=code,
+                fallback=can_fallback,
+            )
+            if can_fallback:
+                continue
+            raise
+
+    if last_error:
+        raise last_error
+    raise RuntimeError("Generation failed without a captured error.")

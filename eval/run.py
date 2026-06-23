@@ -310,7 +310,9 @@ def _aggregate(results: list[dict], probes: list[dict]) -> dict:
             "embedding_model": "mock" if settings.embedding_provider == "mock" else settings.embedding_model,
             "embedding_dimension": settings.embedding_dimension,
             "generation_provider": settings.generation_provider,
+            "generation_fallback_provider": settings.generation_fallback_provider,
             "judge_provider": settings.judge_provider,
+            "judge_fallback_provider": settings.judge_fallback_provider,
             "judge_model": settings.judge_model or None,
         },
     }

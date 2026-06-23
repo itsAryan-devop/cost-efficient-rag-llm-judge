@@ -10,6 +10,10 @@ from eval.llm_judge import (
 from src.config import settings
 
 
+class RateLimitError(Exception):
+    status_code = 429
+
+
 def test_parse_answer_judge_response_reads_graded_scores_and_rationales():
     raw = json.dumps(
         {
@@ -89,3 +93,31 @@ def test_mock_judge_scores_verbose_unsupported_answer_low(monkeypatch):
     )
     result = evaluate_answer(query, context, verbose)
     assert result.faithfulness_score <= 2
+
+
+def test_real_judge_falls_back_from_gemini_to_groq(monkeypatch):
+    monkeypatch.setattr(settings, "judge_provider", "gemini")
+    monkeypatch.setattr(settings, "judge_fallback_provider", "groq")
+    monkeypatch.setattr(settings, "judge_model", "")
+    monkeypatch.setattr(settings, "generation_model", "gemini-test")
+    monkeypatch.setattr(settings, "groq_model", "groq-test")
+
+    def fake_call(provider, model, prompt):
+        if provider == "gemini":
+            raise RateLimitError()
+        return json.dumps(
+            {
+                "faithfulness_score": 5,
+                "faithfulness_rationale": "Fallback judge found the answer grounded.",
+                "relevance_score": 5,
+                "relevance_rationale": "Fallback judge found the answer relevant.",
+            }
+        )
+
+    monkeypatch.setattr("eval.llm_judge._call_judge_model", fake_call)
+
+    result = evaluate_answer("unique fallback query", "context supports answer", "answer")
+
+    assert result.provider == "groq"
+    assert result.model == "groq-test"
+    assert result.faithfulness_score == 5

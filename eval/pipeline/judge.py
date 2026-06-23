@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timezone
 
 _RETRYABLE_STATUSES = {429, 500, 502, 503, 504}
+_FALLBACK_STATUSES = {401, 403, 429, 500, 502, 503, 504}
 
 
 def _status_code_from(exc: Exception) -> int:
@@ -71,24 +72,33 @@ def _parse_verdict(raw: str) -> JudgeVerdict:
 
 
 def _call_gemini(prompt: str, model: str) -> tuple[str, int, int]:
-    """Call Gemini and return (text, prompt_tokens, completion_tokens)."""
+    """Call Gemini with key rotation and return (text, prompt_tokens, completion_tokens)."""
     from google import genai
     from google.genai import types
-    keys = [k.strip() for k in pipeline_settings.gemini_api_keys.split(",") if k.strip()]
+
+    from src.retry import call_with_key_rotation, split_keys
+
+    keys = split_keys(pipeline_settings.gemini_api_keys)
     if pipeline_settings.gemini_api_key and pipeline_settings.gemini_api_key not in keys:
         keys.append(pipeline_settings.gemini_api_key)
     if not keys:
         raise RuntimeError("GEMINI_API_KEY required for judge_provider=gemini")
-    client = genai.Client(api_key=keys[0])
+
     # Without an explicit config the SDK defaults to ~1.0, which made the judge
     # non-deterministic across re-runs (test-retest was 0% as a result).
-    response = client.models.generate_content(
-        model=model,
-        contents=f"{SYSTEM_PROMPT}\n\n{prompt}",
-        config=types.GenerateContentConfig(
-            temperature=pipeline_settings.judge_temperature,
-            response_mime_type="application/json",
+    response = call_with_key_rotation(
+        keys,
+        make_client=lambda key: genai.Client(api_key=key),
+        operation=lambda client: client.models.generate_content(
+            model=model,
+            contents=f"{SYSTEM_PROMPT}\n\n{prompt}",
+            config=types.GenerateContentConfig(
+                temperature=pipeline_settings.judge_temperature,
+                response_mime_type="application/json",
+            ),
         ),
+        purpose="judge",
+        max_retries=max(1, pipeline_settings.max_judge_retries + 1),
     )
     text = response.text or ""
     usage = getattr(response, "usage_metadata", None)
@@ -97,20 +107,38 @@ def _call_gemini(prompt: str, model: str) -> tuple[str, int, int]:
     return text, pt, ct
 
 
+def _groq_keys() -> list[str]:
+    from src.retry import split_keys
+
+    keys = split_keys(pipeline_settings.groq_api_keys)
+    if pipeline_settings.groq_api_key and pipeline_settings.groq_api_key not in keys:
+        keys.append(pipeline_settings.groq_api_key)
+    return keys
+
+
 def _call_groq(prompt: str, model: str) -> tuple[str, int, int]:
-    """Call Groq and return (text, prompt_tokens, completion_tokens)."""
+    """Call Groq with key rotation and return (text, prompt_tokens, completion_tokens)."""
     from groq import Groq
-    if not pipeline_settings.groq_api_key:
-        raise RuntimeError("GROQ_API_KEY required for judge_provider=groq")
-    client = Groq(api_key=pipeline_settings.groq_api_key)
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=pipeline_settings.judge_temperature,
-        response_format={"type": "json_object"},
+
+    from src.retry import call_with_key_rotation
+
+    keys = _groq_keys()
+    if not keys:
+        raise RuntimeError("GROQ_API_KEY (or GROQ_API_KEYS) required for judge_provider=groq")
+    response = call_with_key_rotation(
+        keys,
+        make_client=lambda key: Groq(api_key=key),
+        operation=lambda client: client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=pipeline_settings.judge_temperature,
+            response_format={"type": "json_object"},
+        ),
+        purpose="judge",
+        max_retries=max(1, pipeline_settings.max_judge_retries + 1),
     )
     text = response.choices[0].message.content or ""
     usage = getattr(response, "usage", None)
@@ -168,9 +196,30 @@ def _mock_verdict(output_1: str, output_2: str) -> tuple[str, int, int]:
     return json.dumps(verdict), 100, 200
 
 
-def _dispatch_call(prompt: str, output_1: str, output_2: str) -> tuple[str, int, int]:
+def _dispatch_call(prompt: str, output_1: str, output_2: str) -> tuple[str, int, int, str, str]:
     provider = pipeline_settings.judge_provider.lower()
     model = pipeline_settings.judge_model
+    fallback_provider = pipeline_settings.judge_fallback_provider.lower().strip()
+    fallback_model = pipeline_settings.judge_fallback_model
+
+    provider_order = [(provider, model)]
+    if fallback_provider and fallback_provider != "none" and fallback_provider != provider:
+        provider_order.append((fallback_provider, fallback_model))
+
+    last_error: Exception | None = None
+    for candidate_provider, candidate_model in provider_order:
+        try:
+            raw, pt, ct = _dispatch_single(candidate_provider, candidate_model, prompt, output_1, output_2)
+            return raw, pt, ct, candidate_provider, candidate_model
+        except Exception as exc:  # noqa: BLE001 - fallback is based on provider status code
+            last_error = exc
+            if _status_code_from(exc) in _FALLBACK_STATUSES and (candidate_provider, candidate_model) != provider_order[-1]:
+                continue
+            raise
+    raise last_error if last_error else RuntimeError("judge dispatch failed without a captured error")
+
+
+def _dispatch_single(provider: str, model: str, prompt: str, output_1: str, output_2: str) -> tuple[str, int, int]:
     if provider == "mock":
         return _mock_verdict(output_1, output_2)
     if provider == "gemini":
@@ -202,21 +251,23 @@ def call_judge(
     )
     last_error: Exception | None = None
     raw = ""
+    actual_provider = pipeline_settings.judge_provider
+    actual_model = pipeline_settings.judge_model
     for attempt in range(1 + pipeline_settings.max_judge_retries):
         start = time.time()
         try:
-            raw, pt, ct = _dispatch_call(prompt, output_1, output_2)
+            raw, pt, ct, actual_provider, actual_model = _dispatch_call(prompt, output_1, output_2)
             latency = (time.time() - start) * 1000
             verdict = _parse_verdict(raw)
             cost = estimate_cost(
-                pipeline_settings.judge_model, pt, ct, provider=pipeline_settings.judge_provider
+                actual_model, pt, ct, provider=actual_provider
             )
             audit_logger.log(AuditLogEntry(
                 timestamp=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 case_id=case_id,
                 order=order,
-                judge_provider=pipeline_settings.judge_provider,
-                judge_model=pipeline_settings.judge_model,
+                judge_provider=actual_provider,
+                judge_model=actual_model,
                 prompt=prompt,
                 raw_response=raw,
                 parsed_verdict=verdict.model_dump(),
@@ -235,8 +286,8 @@ def call_judge(
                 timestamp=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                 case_id=case_id,
                 order=order,
-                judge_provider=pipeline_settings.judge_provider,
-                judge_model=pipeline_settings.judge_model,
+                judge_provider=actual_provider,
+                judge_model=actual_model,
                 prompt=prompt,
                 raw_response=raw,
                 parse_error=f"{type(exc).__name__}: {exc}",

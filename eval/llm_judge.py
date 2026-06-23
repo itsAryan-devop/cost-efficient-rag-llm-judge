@@ -26,7 +26,8 @@ from groq import Groq
 
 from src.config import settings
 from src.gemini_client import call_with_gemini_key
-from src.retry import retry_on_transient
+from src.logger import log_event
+from src.retry import ROTATABLE_STATUS_CODES, call_with_key_rotation, split_keys, status_code
 
 cache = Cache(settings.cache_path)
 
@@ -58,6 +59,21 @@ def _judge_provider() -> tuple[str, str]:
     default_model = settings.groq_model if provider == "groq" else settings.generation_model
     model = settings.judge_model or default_model
     return provider, model
+
+
+def _judge_model_for(provider: str) -> str:
+    if settings.judge_model:
+        return settings.judge_model
+    return settings.groq_model if provider == "groq" else settings.generation_model
+
+
+def _judge_provider_order() -> list[tuple[str, str]]:
+    primary = settings.judge_provider.lower()
+    fallback = settings.judge_fallback_provider.lower().strip()
+    providers = [primary]
+    if fallback and fallback != primary and fallback != "none":
+        providers.append(fallback)
+    return [(provider, _judge_model_for(provider)) for provider in providers]
 
 
 def _cache_key(metric: str, prompt: str, provider: str, model: str) -> str:
@@ -187,11 +203,15 @@ def _call_judge_model(provider: str, model: str, prompt: str) -> str:
         )
         return response.text or ""
     if provider == "groq":
-        if not settings.groq_api_key:
-            raise RuntimeError("GROQ_API_KEY is required when JUDGE_PROVIDER=groq.")
-        client = Groq(api_key=settings.groq_api_key)
-        response = retry_on_transient(
-            lambda: client.chat.completions.create(
+        keys = split_keys(settings.groq_api_keys)
+        if settings.groq_api_key and settings.groq_api_key not in keys:
+            keys.append(settings.groq_api_key)
+        if not keys:
+            raise RuntimeError("GROQ_API_KEY (or GROQ_API_KEYS) is required when JUDGE_PROVIDER=groq.")
+        response = call_with_key_rotation(
+            keys,
+            make_client=lambda key: Groq(api_key=key),
+            operation=lambda client: client.chat.completions.create(
                 model=model,
                 messages=[
                     {"role": "system", "content": "You are a strict RAG evaluator. Output only JSON."},
@@ -259,20 +279,41 @@ def evaluate_answer(query: str, context: str, answer: str) -> AnswerJudgeResult:
         return _mock_judge(query, context, answer)
 
     prompt = _llm_judge_prompt(query, context, answer)
-    key = _cache_key("answer_judge_v3", prompt, provider, model)
-    if key in cache:
-        return AnswerJudgeResult(**cache[key])
+    provider_order = _judge_provider_order()
+    last_error: Exception | None = None
+    for candidate_provider, candidate_model in provider_order:
+        key = _cache_key("answer_judge_v3", prompt, candidate_provider, candidate_model)
+        if key in cache:
+            return AnswerJudgeResult(**cache[key])
+        try:
+            raw_response = _call_judge_model(candidate_provider, candidate_model, prompt)
+            faith_score, faith_rationale, rel_score, rel_rationale = _parse_answer_judge_response(raw_response)
+            result = AnswerJudgeResult(
+                faithfulness_score=faith_score,
+                faithfulness_rationale=faith_rationale,
+                relevance_score=rel_score,
+                relevance_rationale=rel_rationale,
+                raw_response=raw_response,
+                provider=candidate_provider,
+                model=candidate_model,
+            )
+            cache[key] = asdict(result)
+            return result
+        except Exception as exc:  # noqa: BLE001 - fallback is based on provider status code
+            last_error = exc
+            code = status_code(exc)
+            can_fallback = code in ROTATABLE_STATUS_CODES and (candidate_provider, candidate_model) != provider_order[-1]
+            log_event(
+                "judge_provider_failed",
+                provider=candidate_provider,
+                model=candidate_model,
+                status_code=code,
+                fallback=can_fallback,
+            )
+            if can_fallback:
+                continue
+            raise
 
-    raw_response = _call_judge_model(provider, model, prompt)
-    faith_score, faith_rationale, rel_score, rel_rationale = _parse_answer_judge_response(raw_response)
-    result = AnswerJudgeResult(
-        faithfulness_score=faith_score,
-        faithfulness_rationale=faith_rationale,
-        relevance_score=rel_score,
-        relevance_rationale=rel_rationale,
-        raw_response=raw_response,
-        provider=provider,
-        model=model,
-    )
-    cache[key] = asdict(result)
-    return result
+    if last_error:
+        raise last_error
+    raise RuntimeError("Judge failed without a captured error.")
