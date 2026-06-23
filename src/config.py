@@ -8,9 +8,12 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_api_keys: str = ""
     groq_api_key: str = ""
+    groq_api_keys: str = ""  # comma/semicolon/newline-separated rotation pool
     embedding_provider: str = "gemini"
     generation_provider: str = "gemini"
+    generation_fallback_provider: str = "groq"
     judge_provider: str = "gemini"
+    judge_fallback_provider: str = "groq"
     embedding_model: str = "gemini-embedding-2"
     embedding_dimension: int = 768
     generation_model: str = "gemini-2.5-flash"

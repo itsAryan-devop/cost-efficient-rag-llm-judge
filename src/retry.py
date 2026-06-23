@@ -75,3 +75,49 @@ def retry_on_transient(
     if last_error:
         raise last_error
     raise RuntimeError(f"{purpose} failed without a captured error.")
+
+
+def split_keys(raw: str) -> list[str]:
+    """Parse a comma/semicolon/newline-separated key pool, preserving order, dropping blanks."""
+    return [k.strip() for k in re.split(r"[,;\n]+", raw or "") if k.strip()]
+
+
+def call_with_key_rotation(
+    keys: list[str],
+    make_client: Callable[[str], object],
+    operation: Callable[[object], T],
+    *,
+    purpose: str,
+    max_retries: int = 3,
+) -> T:
+    """Try ``operation(make_client(key))`` across each key; rotate on auth / rate / 5xx
+    errors (after this key's own transient retries are exhausted).
+
+    Used by both ``src/generation.py`` and ``eval/pipeline/judge.py`` so the Groq path
+    has parity with Gemini's key rotation. Only the zero-based key index is logged,
+    never the key itself.
+    """
+    keys = [k for k in keys if k]
+    if not keys:
+        raise RuntimeError(f"{purpose}: no API keys configured")
+    last_error: Exception | None = None
+    for key_index, key in enumerate(keys):
+        client = make_client(key)
+        try:
+            return retry_on_transient(
+                lambda: operation(client), purpose=f"{purpose}[key={key_index}]", max_retries=max_retries
+            )
+        except Exception as exc:
+            last_error = exc
+            code = status_code(exc)
+            should_rotate = code in ROTATABLE_STATUS_CODES and key_index < len(keys) - 1
+            log_event(
+                "key_rotation",
+                purpose=purpose,
+                key_index=key_index,
+                status_code=code,
+                rotated=should_rotate,
+            )
+            if not should_rotate:
+                raise
+    raise last_error if last_error else RuntimeError(f"{purpose}: rotation exhausted")

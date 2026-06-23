@@ -1,0 +1,51 @@
+{
+  "generate_calls": 3,
+  "results": [
+    {
+      "query": "What does HTTP status code 502 Bad Gateway mean?",
+      "expected_refusal": false,
+      "refused": false,
+      "answer": "HTTP status code 502 Bad Gateway indicates that the server, while acting as a gateway or proxy, received an invalid response from the upstream server [c9768b821e9a129c51eb44e586557857de2599e753173b757ff325fdc9e2e24c].",
+      "cold_latency_ms": {
+        "embedding": 1454.4,
+        "retrieval": 62.4,
+        "generation": 6491.8,
+        "total": 8008.6
+      },
+      "faithfulness_1to5": 5,
+      "relevance_1to5": 5,
+      "skipped_llm": false,
+      "refusal_correct": true
+    },
+    {
+      "query": "Which two open standards is FastAPI based on?",
+      "expected_refusal": false,
+      "refused": false,
+      "answer": "FastAPI is based on two open standards: [**OpenAPI**] [1d3093af6ec1918af658935857967003aebf50dd4bd83a85db0282b4485b2510] and [**JSON Schema**] [1d3093af6ec1918af658935857967003aebf50dd4bd83a85db0282b4485b2510].",
+      "cold_latency_ms": {
+        "embedding": 1441.0,
+        "retrieval": 18.6,
+        "generation": 13426.7,
+        "total": 14886.4
+      },
+      "faithfulness_1to5": 5,
+      "relevance_1to5": 5,
+      "skipped_llm": false,
+      "refusal_correct": true
+    },
+    {
+      "query": "What is the capital of France?",
+      "expected_refusal": true,
+      "refused": true,
+      "answer": "I could not find relevant context in the indexed documents to answer this question.",
+      "cold_latency_ms": {
+        "embedding": 1328.2,
+        "retrieval": 11.9,
+        "generation": 11155.3,
+        "total": 12495.3
+      },
+      "skipped_llm": false,
+      "refusal_correct": true
+    }
+  ]
+}

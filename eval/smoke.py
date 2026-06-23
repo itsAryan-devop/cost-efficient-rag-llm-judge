@@ -1,9 +1,10 @@
 """Tiny real-provider smoke test (<=3 generate calls).
 
 Confirms the real pipeline end-to-end: out-of-corpus questions are refused
-(refusal skips the LLM, so 0 generate calls), and a couple of grounded answers
-are generated and judged with real cold latency. Writes
-``reports/smoke_results.json``. Skips cleanly if no API keys are configured.
+(either by the early distance gate or by the grounded prompt fallback), and a
+couple of grounded answers are generated and judged with real cold latency.
+Writes ``reports/smoke_results.json``. Skips cleanly if no API keys are
+configured.
 
 Run manually (it costs quota):
     python -m eval.smoke
@@ -15,12 +16,13 @@ import json
 import os
 import time
 
-from src.config import settings
-from src.gemini_client import get_gemini_api_keys
-
 # Use a separate DB so the mock-embedded index is never overwritten.
 os.environ.setdefault("DB_PATH", "db/smoke_lancedb")
 os.environ.setdefault("CACHE_PATH", "cache/smoke_diskcache")
+
+from src.config import settings  # noqa: E402 - env defaults must be set first
+from src.gemini_client import get_gemini_api_keys  # noqa: E402
+from src.generation import _groq_keys  # noqa: E402
 
 ANSWERABLE = [
     "What does HTTP status code 502 Bad Gateway mean?",
@@ -30,7 +32,7 @@ REFUSAL = ["What is the capital of France?"]
 
 
 def _have_keys() -> bool:
-    return bool(get_gemini_api_keys()) and bool(settings.groq_api_key)
+    return bool(get_gemini_api_keys()) and bool(_groq_keys())
 
 
 def main() -> None:
@@ -44,7 +46,7 @@ def main() -> None:
     from eval.llm_judge import evaluate_answer
     from eval.run import _judge_context
     from src.embedding import get_embedding
-    from src.generation import generate_answer
+    from src.generation import NO_CONTEXT_MESSAGE, generate_answer
     from src.ingestion import run_ingest
     from src.storage import search
 
@@ -62,13 +64,17 @@ def main() -> None:
         t2 = time.time()
         gen = generate_answer(query, sources, use_cache=False)
         gen_ms = (time.time() - t2) * 1000
+        refused = gen.skipped_llm or gen.answer.strip() == NO_CONTEXT_MESSAGE
         if not gen.skipped_llm:
             generate_calls += 1
 
         record = {
             "query": query,
             "expected_refusal": expect_refusal,
-            "refused": gen.skipped_llm,
+            "refused": refused,
+            "skipped_llm": gen.skipped_llm,
+            "generation_provider": gen.provider,
+            "generation_model": gen.model,
             "answer": gen.answer,
             "cold_latency_ms": {
                 "embedding": round(emb_ms, 1),
@@ -77,10 +83,12 @@ def main() -> None:
                 "total": round(emb_ms + ret_ms + gen_ms, 1),
             },
         }
-        if not expect_refusal and not gen.skipped_llm:
+        if not expect_refusal and not refused:
             judge = evaluate_answer(query, _judge_context(gen.answer, sources), gen.answer)
             record["faithfulness_1to5"] = judge.faithfulness_score
             record["relevance_1to5"] = judge.relevance_score
+            record["judge_provider"] = judge.provider
+            record["judge_model"] = judge.model
         results.append(record)
 
     report = {"generate_calls": generate_calls, "results": results}
