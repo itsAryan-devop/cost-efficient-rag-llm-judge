@@ -72,4 +72,4 @@ Evidence:
 - No-context fallback using `MAX_RETRIEVAL_DISTANCE` plus prompt-level refusal.
 - Dockerfile, docker-compose, CI workflow, Makefile, pinned requirements, and lint config.
 - `README.md` includes setup, API usage, evaluation workflow, cost analysis, evidence summary, and limitations.
-- Current test suite: 73 passed.
+- Current test suite: 79 passed (clean checkout, mock providers).
