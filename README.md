@@ -134,17 +134,18 @@ Assumptions:
 - 768-dimensional embeddings
 - 4 bytes per float
 - 700 bytes metadata/index overhead per vector
-- LanceDB host estimate: $10/month
-- Local storage: $0.08/GB/month
-- Managed baseline: Pinecone serverless Standard plan, priced at $50/month minimum plus storage
-- Embedding estimate: $0.15 / 1M input tokens
+- Currency conversion used: 1 USD = INR 94.69
+- LanceDB host estimate: INR 946.90/month
+- Local storage: INR 7.58/GB/month
+- Managed baseline: Pinecone serverless Standard plan, priced at INR 4,734.50/month minimum plus storage
+- Embedding estimate: INR 14.20 / 1M input tokens
 - Chunk size is characters; token estimate uses about 4.4 chars/token
 
 | Vectors | Index GB | LanceDB total/month | Managed total/month | One-time embedding |
 |---:|---:|---:|---:|---:|
-| 100,000 | 0.351 | $10.03 | $50.00 | $2.73 |
-| 1,000,000 | 3.513 | $10.28 | $50.00 | $27.27 |
-| 10,000,000 | 35.129 | $12.81 | $50.00 | $272.73 |
+| 100,000 | 0.351 | INR 949.74 | INR 4,734.50 | INR 258.50 |
+| 1,000,000 | 3.513 | INR 973.41 | INR 4,734.50 | INR 2,582.20 |
+| 10,000,000 | 35.129 | INR 1,212.98 | INR 4,734.50 | INR 25,824.80 |
 
 ## Problem 2: LLM-as-Judge Pipeline
 
