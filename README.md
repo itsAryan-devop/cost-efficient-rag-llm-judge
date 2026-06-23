@@ -150,15 +150,16 @@ Headline committed Problem 2 result:
 |---|---:|
 | Cases | 5 |
 | Win rate A / B | 0.80 / 0.20 |
-| Weighted score A / B | 4.850 / 2.769 |
-| Pass rate A / B | 1.00 / 0.20 |
+| Weighted score A / B | 4.850 / 2.910 |
+| Pass rate A / B (>=4.0) | 1.00 / 0.40 |
 | Position bias rate | 0.00 |
 | Position flip rate | 0.00 |
+| Verbosity probe / Sycophancy probe | PASSED / PASSED |
 | Adversarial probes passed | 3 / 3 |
 | Gold agreement | 0.60 |
 | Cohen's kappa | 0.231 |
-
-Known limitation: the committed Groq report has `test_retest_sample_size: 1` from the earlier quota-limited run. The code now retests all 3 probes when quota allows.
+| Test-retest agreement (n=3) | 1.00 |
+| Error rate | 0.00 |
 
 ## Setup
 
