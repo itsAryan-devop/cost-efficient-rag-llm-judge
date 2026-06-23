@@ -105,7 +105,9 @@ def call_with_key_rotation(
         client = make_client(key)
         try:
             return retry_on_transient(
-                lambda: operation(client), purpose=f"{purpose}[key={key_index}]", max_retries=max_retries
+                lambda c=client: operation(c),
+                purpose=f"{purpose}[key={key_index}]",
+                max_retries=max_retries,
             )
         except Exception as exc:
             last_error = exc

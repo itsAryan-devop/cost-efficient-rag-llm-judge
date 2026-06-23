@@ -287,7 +287,9 @@ def evaluate_answer(query: str, context: str, answer: str) -> AnswerJudgeResult:
             return AnswerJudgeResult(**cache[key])
         try:
             raw_response = _call_judge_model(candidate_provider, candidate_model, prompt)
-            faith_score, faith_rationale, rel_score, rel_rationale = _parse_answer_judge_response(raw_response)
+            faith_score, faith_rationale, rel_score, rel_rationale = _parse_answer_judge_response(
+                raw_response
+            )
             result = AnswerJudgeResult(
                 faithfulness_score=faith_score,
                 faithfulness_rationale=faith_rationale,
@@ -302,7 +304,9 @@ def evaluate_answer(query: str, context: str, answer: str) -> AnswerJudgeResult:
         except Exception as exc:  # noqa: BLE001 - fallback is based on provider status code
             last_error = exc
             code = status_code(exc)
-            can_fallback = code in ROTATABLE_STATUS_CODES and (candidate_provider, candidate_model) != provider_order[-1]
+            can_fallback = (
+                code in ROTATABLE_STATUS_CODES and (candidate_provider, candidate_model) != provider_order[-1]
+            )
             log_event(
                 "judge_provider_failed",
                 provider=candidate_provider,

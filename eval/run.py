@@ -241,10 +241,17 @@ def _aggregate(results: list[dict], probes: list[dict]) -> dict:
     probe_wrong = [p["graded"]["confidently_wrong"]["faithfulness_1to5"] for p in probes]
 
     is_mock = settings.embedding_provider.lower() == "mock"
+    # How many *answerable* (non-refusal) cases were also skipped_llm? This is
+    # the honest signal that mock embeddings can't separate in-corpus from
+    # out-of-corpus at the configured distance threshold.
+    answerable_results = [r for r in results if not r["expected_refusal"] and r["error"] is None]
+    answerable_skipped = sum(1 for r in answerable_results if r.get("skipped_llm"))
     refusal_note = (
-        "Distance-gated refusal needs real semantic embeddings; bag-of-words mock embeddings "
-        "cannot separate out-of-corpus queries, so refusal is validated by unit tests "
-        "(tests/test_generation.py) and the live smoke (reports/smoke_results.json)."
+        f"Mock-embedding caveat: {answerable_skipped} of {len(answerable_results)} answerable cases "
+        "ALSO refused because bag-of-words mock distances exceed MAX_RETRIEVAL_DISTANCE for nearly "
+        "every query. A 1.0 refusal_accuracy here is therefore not a discrimination signal — the "
+        "system is just defaulting to refusal under mock. Real semantic-refusal behavior is in "
+        "reports/smoke_results.json (live providers)."
         if is_mock
         else None
     )
@@ -280,6 +287,8 @@ def _aggregate(results: list[dict], probes: list[dict]) -> dict:
             "refusal_accuracy": round(_mean(refusals, "refusal_correct"), 4) if refusals else None,
             "refused_count": sum(1 for r in refusals if r.get("refused")),
             "refusal_total": len(refusals),
+            "answerable_skipped_count": answerable_skipped,
+            "answerable_total": len(answerable_results),
             "note": refusal_note,
         },
         "adversarial_probe_summary": {
