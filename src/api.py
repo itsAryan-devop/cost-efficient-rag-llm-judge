@@ -5,12 +5,12 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from .config import settings
-from .embedding import get_embedding
+from .embedding import get_embedding, is_cached
 from .generation import generate_answer
 from .ingest import embed_chunks
 from .ingestion import process_documents
 from .logger import log_query
-from .storage import search, upsert_vectors
+from .storage import get_table, search, upsert_vectors
 
 app = FastAPI(title="Cost-Efficient RAG Application")
 
@@ -71,7 +71,33 @@ def resolve_ingest_dir(data_dir: str) -> str:
 
 @app.get("/health")
 def health_check():
+    """Liveness: the process is up."""
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def readiness_check():
+    """Readiness: the vector store is reachable; reports row count and embedding info."""
+    try:
+        table = get_table()
+        row_count = table.count_rows()
+        embedding_model = settings.embedding_model
+        embedding_dimension = settings.embedding_dimension
+        if row_count > 0:
+            sample = table.to_arrow().to_pylist()[0]
+            embedding_model = sample.get("embedding_model", embedding_model)
+            embedding_dimension = sample.get("embedding_dimension", embedding_dimension)
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"not ready: {exc}") from exc
+
+    return {
+        "status": "ready" if row_count > 0 else "empty",
+        "table": "documents",
+        "row_count": row_count,
+        "embedding_model": embedding_model,
+        "embedding_dimension": embedding_dimension,
+        "embedding_provider": settings.embedding_provider,
+    }
 
 
 @app.post("/ingest")
@@ -99,6 +125,7 @@ def ingest_documents(req: IngestRequest):
 def query_rag(req: QueryRequest):
     start_time = time.time()
 
+    cached = is_cached(req.query, input_type="query")
     try:
         # 1. Embed query
         embedding_start = time.time()
@@ -129,6 +156,7 @@ def query_rag(req: QueryRequest):
         provider=generation.provider,
         model=generation.model,
         skipped_llm=generation.skipped_llm,
+        cached=cached,
         embedding_latency_ms=round(embedding_latency_ms, 2),
         retrieval_latency_ms=round(retrieval_latency_ms, 2),
         generation_latency_ms=round(generation_latency_ms, 2),

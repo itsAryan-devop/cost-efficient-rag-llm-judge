@@ -1,0 +1,19 @@
+services:
+  rag:
+    build: .
+    image: cost-efficient-rag
+    ports:
+      - "8000:8000"
+    # .env is optional: /health, /ready and /docs work without keys. Ingest/query
+    # need a provider (set EMBEDDING_PROVIDER=mock etc. for a keyless smoke).
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./data:/app/data        # mount the corpus (and any new docs to ingest)
+      - rag-db:/app/db          # persist the LanceDB index across restarts
+      - rag-cache:/app/cache    # persist the embedding/generation cache
+
+volumes:
+  rag-db:
+  rag-cache:

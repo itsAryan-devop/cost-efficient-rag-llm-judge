@@ -13,6 +13,20 @@ def test_health_endpoint():
     assert response.json() == {"status": "ok"}
 
 
+def test_ready_endpoint_reports_row_count_and_embedding_info(mock_corpus_db):
+    client = TestClient(app)
+
+    response = client.get("/ready")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "ready"
+    assert body["table"] == "documents"
+    assert body["row_count"] > 0
+    assert body["embedding_dimension"] == settings.embedding_dimension
+    assert "embedding_model" in body
+
+
 def test_query_rejects_empty_query():
     client = TestClient(app)
 
